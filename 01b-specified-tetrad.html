@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="id" xml:lang="id"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Kasus 1b · Uji Specified Tetrad – Uji Perbedaan Atribut dengan R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-282abdd4a580632c052b6858c0510cd2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Tidak ada hasil",
+    "search-matching-documents-text": "dokumen cocok",
+    "search-copy-link-title": "Salin tautan untuk mencari",
+    "search-hide-matches-text": "Sembunyikan kecocokan lainnya",
+    "search-more-match-text": "kecocokan lainnya di dokumen ini",
+    "search-more-matches-text": "kecocokan lainnya di dokumen ini",
+    "search-clear-button-title": "Hapus",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Batal",
+    "search-submit-button-title": "Kirim",
+    "search-label": "Mencari"
+  }
+}</script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Uji Perbedaan Atribut dengan R</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Mencari"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alihkan navigasi" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Beranda</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./01-tetrad.html"> 
+<span class="menu-text">Kasus 1 · Tetrad</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./01b-specified-tetrad.html" aria-current="page"> 
+<span class="menu-text">Kasus 1b · Specified Tetrad</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./02-ranking.html"> 
+<span class="menu-text">Kasus 2 · Ranking</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./03-ranking-seri.html"> 
+<span class="menu-text">Kasus 3 · Ranking Seri</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Isi halaman</h2>
+   
+  <ul>
+  <li><a href="#cerita-kasus" id="toc-cerita-kasus" class="nav-link active" data-scroll-target="#cerita-kasus">Cerita kasus</a></li>
+  <li><a href="#desain-uji" id="toc-desain-uji" class="nav-link" data-scroll-target="#desain-uji">Desain uji</a>
+  <ul class="collapse">
+  <li><a href="#berapa-peluang-menebak" id="toc-berapa-peluang-menebak" class="nav-link" data-scroll-target="#berapa-peluang-menebak">Berapa peluang menebak?</a></li>
+  </ul></li>
+  <li><a href="#satu-sisi-atau-dua-sisi" id="toc-satu-sisi-atau-dua-sisi" class="nav-link" data-scroll-target="#satu-sisi-atau-dua-sisi">Satu sisi atau dua sisi?</a></li>
+  <li><a href="#langkah-1-membaca-data" id="toc-langkah-1-membaca-data" class="nav-link" data-scroll-target="#langkah-1-membaca-data">Langkah 1 — Membaca data</a></li>
+  <li><a href="#langkah-2-hitung-jenis-pilihan" id="toc-langkah-2-hitung-jenis-pilihan" class="nav-link" data-scroll-target="#langkah-2-hitung-jenis-pilihan">Langkah 2 — Hitung jenis pilihan</a></li>
+  <li><a href="#langkah-3-nilai-kritis-dengan-findcr" id="toc-langkah-3-nilai-kritis-dengan-findcr" class="nav-link" data-scroll-target="#langkah-3-nilai-kritis-dengan-findcr">Langkah 3 — Nilai kritis dengan <code>findcr()</code></a></li>
+  <li><a href="#langkah-4-nilai-p-dengan-binom.test" id="toc-langkah-4-nilai-p-dengan-binom.test" class="nav-link" data-scroll-target="#langkah-4-nilai-p-dengan-binom.test">Langkah 4 — Nilai p dengan <code>binom.test()</code></a></li>
+  <li><a href="#langkah-5-seberapa-banyak-konsumen-yang-merasakan" id="toc-langkah-5-seberapa-banyak-konsumen-yang-merasakan" class="nav-link" data-scroll-target="#langkah-5-seberapa-banyak-konsumen-yang-merasakan">Langkah 5 — Seberapa banyak konsumen yang merasakan?</a></li>
+  <li><a href="#langkah-6-visualisasi" id="toc-langkah-6-visualisasi" class="nav-link" data-scroll-target="#langkah-6-visualisasi">Langkah 6 — Visualisasi</a></li>
+  <li><a href="#interpretasi" id="toc-interpretasi" class="nav-link" data-scroll-target="#interpretasi">Interpretasi</a></li>
+  <li><a href="#tantangan" id="toc-tantangan" class="nav-link" data-scroll-target="#tantangan">Tantangan</a>
+  <ul class="collapse">
+  <li><a href="#tantangan-1b.1-kopi-dan-wedang-jahe" id="toc-tantangan-1b.1-kopi-dan-wedang-jahe" class="nav-link" data-scroll-target="#tantangan-1b.1-kopi-dan-wedang-jahe">Tantangan 1b.1: Kopi dan wedang jahe</a></li>
+  <li><a href="#tantangan-1b.2-kasus-satu-sisi" id="toc-tantangan-1b.2-kasus-satu-sisi" class="nav-link" data-scroll-target="#tantangan-1b.2-kasus-satu-sisi">Tantangan 1b.2: Kasus satu sisi</a></li>
+  <li><a href="#tantangan-1b.3-merencanakan-jumlah-panelis" id="toc-tantangan-1b.3-merencanakan-jumlah-panelis" class="nav-link" data-scroll-target="#tantangan-1b.3-merencanakan-jumlah-panelis">Tantangan 1b.3: Merencanakan jumlah panelis</a></li>
+  <li><a href="#tantangan-1b.4-cek-contoh-8.3-di-buku" id="toc-tantangan-1b.4-cek-contoh-8.3-di-buku" class="nav-link" data-scroll-target="#tantangan-1b.4-cek-contoh-8.3-di-buku">Tantangan 1b.4: Cek Contoh 8.3 di buku</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Kasus 1b · Uji <em>Specified Tetrad</em></h1>
+<p class="subtitle lead">Gula semut dari pemasok baru — apakah kemanisannya sama?</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="cerita-kasus" class="level3 kasus">
+<h3 class="anchored" data-anchor-id="cerita-kasus">Cerita kasus</h3>
+<p>Sebuah produsen minuman di Yogyakarta memakai <strong>gula semut</strong> (gula kelapa kristal) untuk tiga produknya: <strong>teh</strong>, <strong>kopi</strong>, dan <strong>wedang jahe</strong>. Pemasok lama tidak sanggup lagi memenuhi pesanan, jadi perusahaan ingin beralih ke <strong>pemasok baru</strong> dari Kulon Progo yang harganya lebih murah.</p>
+<p>Syaratnya: <strong>kemanisan ketiga produk tidak boleh berubah</strong>, baik menjadi lebih manis maupun kurang manis. Atribut lain (warna, aroma karamel) sudah dicek oleh tim QC dan dianggap setara.</p>
+<p><strong>Tujuan uji:</strong> menentukan apakah konsumen merasakan perbedaan <strong>kemanisan</strong> antara minuman yang dibuat dengan gula semut pemasok lama dan pemasok baru, untuk setiap jenis minuman.</p>
+</section>
+<section id="desain-uji" class="level2">
+<h2 class="anchored" data-anchor-id="desain-uji">Desain uji</h2>
+<p>Kasus ini mengikuti <strong>Contoh 8.3</strong> di Meilgaard dkk. (Bagian 8.3).</p>
+<ul>
+<li>Setiap panelis menerima <strong>4 gelas</strong>: 2 gelas dengan gula pemasok <strong>lama</strong> (A) dan 2 gelas dengan gula pemasok <strong>baru</strong> (B).</li>
+<li>Ada <strong>6 urutan penyajian</strong> (AABB, ABAB, ABBA, BAAB, BABA, BBAA), masing-masing dipakai sama banyak.</li>
+<li>Instruksi: <em>“Pilih <strong>dua</strong> sampel yang <strong>paling manis</strong>.”</em> Panelis wajib memilih, walaupun ragu.</li>
+<li>Setiap jenis minuman diuji oleh <strong>30 konsumen</strong> yang berbeda (teh, kopi, wedang jahe = 3 uji terpisah).</li>
+</ul>
+<section id="berapa-peluang-menebak" class="level3">
+<h3 class="anchored" data-anchor-id="berapa-peluang-menebak">Berapa peluang menebak?</h3>
+<p>Ada 6 cara memilih 2 dari 4 sampel:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">choose</span>(<span class="dv">4</span>, <span class="dv">2</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 6</code></pre>
+</div>
+</div>
+<p>Dari 6 kemungkinan itu, hanya <strong>1</strong> yang berisi kedua sampel lama (A-A), dan hanya <strong>1</strong> yang berisi kedua sampel baru (B-B). Empat sisanya adalah pasangan campuran (A-B). Jika panelis hanya menebak:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Jenis pilihan</th>
+<th>Arti</th>
+<th>Peluang menebak</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>lama-lama</td>
+<td>gula lama terasa lebih manis</td>
+<td>1/6</td>
+</tr>
+<tr class="even">
+<td>baru-baru</td>
+<td>gula baru terasa lebih manis</td>
+<td>1/6</td>
+</tr>
+<tr class="odd">
+<td>lama-baru</td>
+<td>panelis tidak menangkap perbedaan</td>
+<td>4/6</td>
+</tr>
+</tbody>
+</table>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Catatan</span>Bedanya dengan tetrad biasa (Kasus 1)
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Pada tetrad biasa, panelis cukup <strong>mengelompokkan</strong> sampel, jadi peluang menebaknya 1/3. Pada <em>specified tetrad</em>, panelis harus menunjuk <strong>arah</strong> perbedaan (mana yang lebih manis). Peluang menebaknya lebih kecil (1/6), dan kita tahu <strong>sampel mana</strong> yang lebih manis.</p>
+</div>
+</div>
+</section>
+</section>
+<section id="satu-sisi-atau-dua-sisi" class="level2">
+<h2 class="anchored" data-anchor-id="satu-sisi-atau-dua-sisi">Satu sisi atau dua sisi?</h2>
+<p>Perusahaan tidak ingin kemanisan berubah <strong>ke arah mana pun</strong>. Jadi ada dua kemungkinan kegagalan: gula lama lebih manis, <strong>atau</strong> gula baru lebih manis. Ini adalah uji <strong>dua sisi</strong>.</p>
+<p>Cara mengujinya:</p>
+<ol type="1">
+<li>Hitung jumlah panelis yang memilih <strong>lama-lama</strong> dan yang memilih <strong>baru-baru</strong>.</li>
+<li>Uji <strong>masing-masing arah</strong> dengan uji binomial <strong>satu sisi</strong> (peluang tebakan 1/6), memakai <strong>α/2 = 0,025</strong>. Risiko total untuk kedua arah tetap α = 0,05.</li>
+</ol>
+</section>
+<section id="langkah-1-membaca-data" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-1-membaca-data">Langkah 1 — Membaca data</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>gula <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/kasus1b_specified_tetrad_gula_semut.csv"</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(gula)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["produk"],"name":[1],"type":["chr"],"align":["left"]},{"label":["panelis"],"name":[2],"type":["chr"],"align":["left"]},{"label":["urutan"],"name":[3],"type":["chr"],"align":["left"]},{"label":["kode_lama"],"name":[4],"type":["chr"],"align":["left"]},{"label":["kode_baru"],"name":[5],"type":["chr"],"align":["left"]},{"label":["urutan_kode"],"name":[6],"type":["chr"],"align":["left"]},{"label":["pilihan_paling_manis"],"name":[7],"type":["chr"],"align":["left"]},{"label":["jenis_pilihan"],"name":[8],"type":["chr"],"align":["left"]}],"data":[{"1":"teh","2":"T01","3":"AABB","4":"737-853","5":"162-767","6":"737-853-767-162","7":"737-853","8":"lama-lama","_rn_":"1"},{"1":"teh","2":"T02","3":"AABB","4":"660-890","5":"411-534","6":"660-890-534-411","7":"660-890","8":"lama-lama","_rn_":"2"},{"1":"teh","2":"T03","3":"AABB","4":"143-160","5":"326-486","6":"160-143-326-486","7":"143-160","8":"lama-lama","_rn_":"3"},{"1":"teh","2":"T04","3":"BABA","4":"392-696","5":"262-412","6":"412-392-262-696","7":"262-392","8":"lama-baru","_rn_":"4"},{"1":"teh","2":"T05","3":"ABBA","4":"631-844","5":"276-913","6":"844-913-276-631","7":"276-844","8":"lama-baru","_rn_":"5"},{"1":"teh","2":"T06","3":"BBAA","4":"530-873","5":"866-910","6":"910-866-873-530","7":"866-873","8":"lama-baru","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 50%">
+<col style="width: 50%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Kolom</th>
+<th>Arti</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><code>produk</code></td>
+<td>jenis minuman: teh, kopi, wedang</td>
+</tr>
+<tr class="even">
+<td><code>panelis</code></td>
+<td>kode panelis</td>
+</tr>
+<tr class="odd">
+<td><code>urutan</code></td>
+<td>urutan penyajian (A = pemasok lama, B = pemasok baru)</td>
+</tr>
+<tr class="even">
+<td><code>kode_lama</code>, <code>kode_baru</code></td>
+<td>kode 3 digit sampel A dan B</td>
+</tr>
+<tr class="odd">
+<td><code>urutan_kode</code></td>
+<td>kode sampel dari kiri ke kanan di nampan</td>
+</tr>
+<tr class="even">
+<td><code>pilihan_paling_manis</code></td>
+<td>dua kode yang dipilih panelis</td>
+</tr>
+<tr class="odd">
+<td><code>jenis_pilihan</code></td>
+<td>jenis sampel yang dipilih: lama-lama, baru-baru, atau lama-baru</td>
+</tr>
+</tbody>
+</table>
+<p>Kita mulai dengan <strong>teh</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>teh <span class="ot">&lt;-</span> gula <span class="sc">%&gt;%</span> <span class="fu">filter</span>(produk <span class="sc">==</span> <span class="st">"teh"</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(teh<span class="sc">$</span>urutan)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+AABB ABAB ABBA BAAB BABA BBAA 
+   5    5    5    5    5    5 </code></pre>
+</div>
+</div>
+<p>Desain seimbang (masing-masing 5) ✔️</p>
+</section>
+<section id="langkah-2-hitung-jenis-pilihan" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-2-hitung-jenis-pilihan">Langkah 2 — Hitung jenis pilihan</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(teh<span class="sc">$</span>jenis_pilihan)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+baru-baru lama-baru lama-lama 
+        3        16        11 </code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>n_total    <span class="ot">&lt;-</span> <span class="fu">nrow</span>(teh)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>n_lamalama <span class="ot">&lt;-</span> <span class="fu">sum</span>(teh<span class="sc">$</span>jenis_pilihan <span class="sc">==</span> <span class="st">"lama-lama"</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>n_barubaru <span class="ot">&lt;-</span> <span class="fu">sum</span>(teh<span class="sc">$</span>jenis_pilihan <span class="sc">==</span> <span class="st">"baru-baru"</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">total =</span> n_total, <span class="at">lama_lama =</span> n_lamalama, <span class="at">baru_baru =</span> n_barubaru)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>    total lama_lama baru_baru 
+       30        11         3 </code></pre>
+</div>
+</div>
+<p>Jika panelis hanya menebak, kita berharap sekitar 30 × 1/6 = <strong>5</strong> panelis untuk setiap arah.</p>
+</section>
+<section id="langkah-3-nilai-kritis-dengan-findcr" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-3-nilai-kritis-dengan-findcr">Langkah 3 — Nilai kritis dengan <code>findcr()</code></h2>
+<p>Fungsi <code>findcr()</code> dari paket <strong>sensR</strong> memberi <strong>jumlah minimum</strong> jawaban agar hasilnya signifikan. Karena uji dua sisi, kita pakai α/2 = 0,025 untuk setiap arah.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>kritis <span class="ot">&lt;-</span> <span class="fu">findcr</span>(<span class="at">sample.size =</span> n_total, <span class="at">alpha =</span> <span class="fl">0.05</span> <span class="sc">/</span> <span class="dv">2</span>, <span class="at">p0 =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>kritis</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 10</code></pre>
+</div>
+</div>
+<p>Artinya, jika <strong>10 atau lebih</strong> dari 30 panelis memilih arah yang sama, perbedaan kemanisannya signifikan.</p>
+<ul>
+<li>lama-lama = 11 → mencapai nilai kritis, jadi signifikan</li>
+<li>baru-baru = 3 → di bawah nilai kritis, jadi tidak signifikan</li>
+</ul>
+</section>
+<section id="langkah-4-nilai-p-dengan-binom.test" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-4-nilai-p-dengan-binom.test">Langkah 4 — Nilai p dengan <code>binom.test()</code></h2>
+<p>Nilai kritis sudah cukup untuk mengambil keputusan, tetapi laporan ilmiah biasanya mencantumkan nilai p.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>uji_lama <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(n_lamalama, n_total, <span class="at">p =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>uji_baru <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(n_barubaru, n_total, <span class="at">p =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="fu">data.frame</span>(<span class="at">arah    =</span> <span class="fu">c</span>(<span class="st">"gula lama lebih manis"</span>, <span class="st">"gula baru lebih manis"</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>           <span class="at">jumlah  =</span> <span class="fu">c</span>(n_lamalama, n_barubaru),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>           <span class="at">p_value =</span> <span class="fu">round</span>(<span class="fu">c</span>(uji_lama<span class="sc">$</span>p.value, uji_baru<span class="sc">$</span>p.value), <span class="dv">4</span>),</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>           <span class="at">signifikan =</span> <span class="fu">c</span>(uji_lama<span class="sc">$</span>p.value, uji_baru<span class="sc">$</span>p.value) <span class="sc">&lt;</span> <span class="fl">0.025</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["arah"],"name":[1],"type":["chr"],"align":["left"]},{"label":["jumlah"],"name":[2],"type":["int"],"align":["right"]},{"label":["p_value"],"name":[3],"type":["dbl"],"align":["right"]},{"label":["signifikan"],"name":[4],"type":["lgl"],"align":["right"]}],"data":[{"1":"gula lama lebih manis","2":"11","3":"0.0067","4":"TRUE"},{"1":"gula baru lebih manis","2":"3","3":"0.8972","4":"FALSE"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Bandingkan nilai p dengan <strong>0,025</strong> (bukan 0,05), karena kita menguji dua arah.</p>
+</section>
+<section id="langkah-5-seberapa-banyak-konsumen-yang-merasakan" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-5-seberapa-banyak-konsumen-yang-merasakan">Langkah 5 — Seberapa banyak konsumen yang merasakan?</h2>
+<p>Proporsi pemilih lama-lama yang teramati adalah <em>pc</em> = 11/30. Sebagian dari mereka hanya beruntung menebak. Fungsi <code>pc2pd()</code> mengoreksi tebakan itu dan memberi <em>pd</em>, yaitu perkiraan proporsi konsumen yang <strong>benar-benar</strong> merasakan gula lama lebih manis.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pc_lama <span class="ot">&lt;-</span> n_lamalama <span class="sc">/</span> n_total</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="fu">pc2pd</span>(pc_lama, <span class="at">Pguess =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.24</code></pre>
+</div>
+</div>
+</section>
+<section id="langkah-6-visualisasi" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-6-visualisasi">Langkah 6 — Visualisasi</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>teh <span class="sc">%&gt;%</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(jenis_pilihan) <span class="sc">%&gt;%</span></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> jenis_pilihan, <span class="at">y =</span> n, <span class="at">fill =</span> jenis_pilihan)) <span class="sc">+</span></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">width =</span> <span class="fl">0.6</span>, <span class="at">show.legend =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_hline</span>(<span class="at">yintercept =</span> n_total <span class="sc">/</span> <span class="dv">6</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span></span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span> <span class="fu">c</span>(<span class="st">"baru-baru"</span> <span class="ot">=</span> <span class="st">"#2f9e44"</span>,</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"lama-baru"</span> <span class="ot">=</span> <span class="st">"grey70"</span>,</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>                               <span class="st">"lama-lama"</span> <span class="ot">=</span> <span class="st">"#9c36b5"</span>)) <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Dua sampel yang dipilih paling manis"</span>, <span class="at">y =</span> <span class="st">"Jumlah panelis"</span>) <span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="01b-specified-tetrad_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Jenis pilihan panelis pada uji specified tetrad (teh). Garis putus-putus = jumlah yang diharapkan jika menebak (5).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretasi" class="level2">
+<h2 class="anchored" data-anchor-id="interpretasi">Interpretasi</h2>
+<blockquote class="blockquote">
+<p>Pada uji <em>specified tetrad</em> dengan 30 konsumen, 11 panelis memilih kedua sampel teh dengan gula pemasok <strong>lama</strong> sebagai yang paling manis, sedangkan hanya 3 panelis memilih kedua sampel gula <strong>baru</strong>. Jumlah 11 melebihi nilai kritis 10 (α = 0,05 dua sisi; p = 0,007). Artinya, <strong>teh dengan gula pemasok baru terasa nyata kurang manis</strong>. Diperkirakan sekitar 24% konsumen merasakan perbedaan ini. Pemasok baru <strong>belum dapat</strong> dipakai untuk teh tanpa penyesuaian formula.</p>
+</blockquote>
+<hr>
+</section>
+<section id="tantangan" class="level2">
+<h2 class="anchored" data-anchor-id="tantangan">Tantangan</h2>
+<section id="tantangan-1b.1-kopi-dan-wedang-jahe" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-1b.1-kopi-dan-wedang-jahe">Tantangan 1b.1: Kopi dan wedang jahe</h3>
+<p>Ulangi Langkah 1–5 untuk <strong>kopi</strong> dan <strong>wedang jahe</strong>.</p>
+<ol type="a">
+<li>Buat satu tabel ringkasan berisi: produk, jumlah lama-lama, jumlah baru-baru, nilai kritis, nilai p untuk setiap arah, dan kesimpulan.</li>
+<li>Untuk produk mana saja pemasok baru <strong>boleh</strong> dipakai? Hati-hati dengan kata “boleh”: apakah hasil tidak signifikan cukup untuk menyatakan kemanisannya <strong>sama</strong>? (Ingat Kasus 1.)</li>
+</ol>
+</section>
+<section id="tantangan-1b.2-kasus-satu-sisi" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-1b.2-kasus-satu-sisi">Tantangan 1b.2: Kasus satu sisi</h3>
+<p>Untuk produk teh, tim R&amp;D membuat formula baru: gula pemasok baru ditambah <strong>10%</strong> agar kemanisannya menyamai formula lama. Mereka <strong>yakin</strong> formula ini kini lebih manis daripada formula yang memakai gula baru tanpa tambahan, dan hanya ingin <strong>membuktikannya</strong>.</p>
+<p>Uji <em>specified tetrad</em> dengan <strong>36</strong> konsumen: <strong>13</strong> memilih kedua sampel formula tambahan 10% sebagai yang paling manis.</p>
+<ol type="a">
+<li>Apakah ini uji satu sisi atau dua sisi? Jelaskan.</li>
+<li>Berapa nilai kritisnya? Berapa nilai p-nya?</li>
+<li>Apa kesimpulannya?</li>
+</ol>
+</section>
+<section id="tantangan-1b.3-merencanakan-jumlah-panelis" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-1b.3-merencanakan-jumlah-panelis">Tantangan 1b.3: Merencanakan jumlah panelis</h3>
+<p>Untuk uji ulang pada <strong>wedang jahe</strong>, perusahaan ingin peluang 80% untuk menangkap perbedaan jika sebenarnya <strong>25%</strong> konsumen merasakan salah satu arah (<em>pd</em> = 0,25). Gunakan α = 0,025 untuk setiap arah.</p>
+<ol type="a">
+<li>Berapa <em>power</em> uji yang sudah dilakukan (30 panelis)?</li>
+<li>Berapa panelis yang dibutuhkan untuk mencapai <em>power</em> 80%?</li>
+</ol>
+<p><em>Petunjuk:</em> fungsi sensR yang namanya diawali <code>discrim</code> dan diakhiri <code>Pwr</code> atau <code>SS</code>. Jangan lupa <code>pGuess = 1/6</code>.</p>
+</section>
+<section id="tantangan-1b.4-cek-contoh-8.3-di-buku" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-1b.4-cek-contoh-8.3-di-buku">Tantangan 1b.4: Cek Contoh 8.3 di buku</h3>
+<p>Pada Contoh 8.3 (pengisi untuk pemanis), 24 panelis menguji setiap minuman. Jumlah pilihan “kedua sampel kandidat lebih manis” dan “kedua sampel standar lebih manis” adalah:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Minuman</th>
+<th>Kandidat lebih manis</th>
+<th>Standar lebih manis</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Limun</td>
+<td>1</td>
+<td>5</td>
+</tr>
+<tr class="even">
+<td>Teh</td>
+<td>3</td>
+<td>4</td>
+</tr>
+<tr class="odd">
+<td>Kopi</td>
+<td>6</td>
+<td>4</td>
+</tr>
+</tbody>
+</table>
+<ol type="a">
+<li>Dengan <code>findcr()</code>, cari nilai kritis untuk 24 panelis, uji dua sisi, α = 0,05.</li>
+<li>Buku menyebut nilai kritisnya <strong>8</strong>. Apakah hasil kalian sama? Jika berbeda, coba <code>alpha = 0.05</code> (tanpa dibagi dua). Diskusikan kemungkinan penyebab perbedaannya.</li>
+<li>Apakah kesimpulan buku (tidak ada perbedaan kemanisan) berubah?</li>
+</ol>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Disalin!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Disalin!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Praktikum Evaluasi Sensori · Uji Perbedaan Atribut (Meilgaard dkk., Bab 8)</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>

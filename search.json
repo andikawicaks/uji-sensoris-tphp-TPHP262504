@@ -1,0 +1,317 @@
+[
+  {
+    "objectID": "03-ranking-seri.html",
+    "href": "03-ranking-seri.html",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "",
+    "text": "Produsen keripik tempe di Yogyakarta menerima keluhan bahwa keripiknya “melempem” ketika sampai di tangan pembeli luar kota. Tim QC menyimpan keripik dalam kemasan yang biasa dipakai, lalu mengambil sampel pada hari ke-0, 7, 14, dan 21.\n\n\n\nKode sampel\nLama simpan\n\n\n\n\n174\n0 hari (segar)\n\n\n395\n7 hari\n\n\n628\n14 hari\n\n\n841\n21 hari\n\n\n\nTujuan uji: mengetahui sampai hari ke berapa kerenyahan keripik belum berubah menurut konsumen."
+  },
+  {
+    "objectID": "03-ranking-seri.html#desain-uji",
+    "href": "03-ranking-seri.html#desain-uji",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Desain uji",
+    "text": "Desain uji\n\n30 konsumen menerima keempat sampel sekaligus dengan urutan acak dan seimbang.\nInstruksi: “Urutkan sampel berdasarkan kerenyahan. Beri angka 1 untuk yang paling tidak renyah dan 4 untuk yang paling renyah.”\nBerbeda dengan Kasus 2, panelis boleh memberi angka yang sama jika benar-benar tidak bisa membedakan dua sampel, dan menuliskannya di kolom catatan.\nData dikumpulkan dengan lembar kertas, lalu diketik ulang ke Excel/CSV.\n\nMeilgaard dkk. (Bagian 8.6.4) menyarankan: jika panelis tidak bisa membedakan, berikan ranking rata-rata (midrank). Contohnya, jika dua sampel di posisi tengah dari empat sampel dianggap sama, keduanya diberi ranking (2 + 3)/2 = 2,5."
+  },
+  {
+    "objectID": "03-ranking-seri.html#langkah-1-membaca-data",
+    "href": "03-ranking-seri.html#langkah-1-membaca-data",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Langkah 1 — Membaca data",
+    "text": "Langkah 1 — Membaca data\n\nkeripik &lt;- read.csv(\"data/kasus3_ranking_seri_keripik.csv\")\nhead(keripik, 10)"
+  },
+  {
+    "objectID": "03-ranking-seri.html#langkah-2-menemukan-nilai-seri",
+    "href": "03-ranking-seri.html#langkah-2-menemukan-nilai-seri",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Langkah 2 — Menemukan nilai seri",
+    "text": "Langkah 2 — Menemukan nilai seri\nJika tidak ada nilai seri, jumlah ranking setiap panelis = 1 + 2 + 3 + 4 = 10.\n\nkeripik$jumlah &lt;- rowSums(keripik[, c(\"S174\", \"S395\", \"S628\", \"S841\")])\nkeripik %&gt;% filter(jumlah != 10)\n\n\n  \n\n\n\nLihat baik-baik. Panelis menuliskan nilai seri dengan cara yang tidak seragam:\n\nPanelis yang menulis 2, 4, 2, 1 maksudnya: sampel 395 paling renyah, 841 paling tidak renyah, 174 dan 628 sama di tengah.\nAda panelis yang menulis 3, 3, 2, 1 (dua sampel paling renyah dianggap sama).\n\nKita tidak boleh langsung menganalisis angka mentah ini. Semua angka harus diubah menjadi ranking rata-rata dulu."
+  },
+  {
+    "objectID": "03-ranking-seri.html#langkah-3-mengubah-menjadi-ranking-rata-rata-dengan-rank",
+    "href": "03-ranking-seri.html#langkah-3-mengubah-menjadi-ranking-rata-rata-dengan-rank",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Langkah 3 — Mengubah menjadi ranking rata-rata dengan rank()",
+    "text": "Langkah 3 — Mengubah menjadi ranking rata-rata dengan rank()\nFungsi dasar R rank() langsung memberi ranking rata-rata untuk nilai seri:\n\nrank(c(2, 4, 2, 1))   # panelis R03\n\n[1] 2.5 4.0 2.5 1.0\n\nrank(c(3, 3, 2, 1))   # panelis R16\n\n[1] 3.5 3.5 2.0 1.0\n\n\nFungsi ini juga memperbaiki ketidakseragaman penulisan: c(1, 2, 2, 3) dan c(1, 2, 2, 4) sama-sama menjadi 1, 2.5, 2.5, 4.\nSekarang terapkan ke semua panelis. Ubah ke format panjang, lalu ranking ulang di dalam setiap panelis (group_by(panelis)):\n\nrenyah &lt;- keripik %&gt;%\n  select(panelis, S174, S395, S628, S841) %&gt;%\n  pivot_longer(cols = -panelis, names_to = \"kode\", values_to = \"tulisan\") %&gt;%\n  mutate(kode = sub(\"S\", \"\", kode),\n         hari = recode(kode, \"174\" = \"H0\", \"395\" = \"H7\",\n                             \"628\" = \"H14\", \"841\" = \"H21\"),\n         hari = factor(hari, levels = c(\"H0\", \"H7\", \"H14\", \"H21\"))) %&gt;%\n  group_by(panelis) %&gt;%\n  mutate(rank = rank(tulisan)) %&gt;%\n  ungroup()\n\nrenyah %&gt;% filter(panelis == \"R03\")\n\n\n  \n\n\n\nCek: sekarang semua panelis memiliki jumlah ranking 10.\n\nrenyah %&gt;%\n  group_by(panelis) %&gt;%\n  summarise(jumlah = sum(rank)) %&gt;%\n  count(jumlah)"
+  },
+  {
+    "objectID": "03-ranking-seri.html#langkah-4-uji-friedman-dengan-koreksi-nilai-seri",
+    "href": "03-ranking-seri.html#langkah-4-uji-friedman-dengan-koreksi-nilai-seri",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Langkah 4 — Uji Friedman dengan koreksi nilai seri",
+    "text": "Langkah 4 — Uji Friedman dengan koreksi nilai seri\nKabar baik: friedman.test() otomatis memakai statistik T′ yang sudah dikoreksi untuk nilai seri (Persamaan 14.16 di buku). Kalian tidak perlu menghitung manual.\n\nfriedman.test(rank ~ hari | panelis, data = renyah)\n\n\n    Friedman rank sum test\n\ndata:  rank and hari and panelis\nFriedman chi-squared = 60.291, df = 3, p-value = 5.095e-13"
+  },
+  {
+    "objectID": "03-ranking-seri.html#langkah-5-uji-lanjut",
+    "href": "03-ranking-seri.html#langkah-5-uji-lanjut",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Langkah 5 — Uji lanjut",
+    "text": "Langkah 5 — Uji lanjut\n\nhasil_renyah &lt;- with(renyah,\n  friedman(judge = panelis, trt = as.character(hari), evaluation = rank,\n           alpha = 0.05, group = TRUE, console = TRUE))\n\n\nStudy: rank ~ panelis + as.character(hari) \n\nas.character(hari),  Sum of the ranks\n\n    rank  r\nH0   101 30\nH14   59 30\nH21   39 30\nH7   101 30\n\nFriedman's Test\n===============\nAdjusted for ties\nCritical Value: 60.29066\nP.Value Chisq: 5.094813e-13\nF Value: 58.85115\nP.Value F: 0 \n\nPost Hoc Analysis\n\nAlpha: 0.05 ; DF Error: 87\nt-Student: 1.987608\nLSD: 11.40003 \n\nTreatments with the same letter are not significantly different.\n\n    Sum of ranks groups\nH0           101      a\nH7           101      a\nH14           59      b\nH21           39      c\n\n\n\n\n\n\n\n\nPeringatanAwas jebakan: trt harus berupa teks\n\n\n\nKolom hari kita jadikan factor agar urutannya H0 → H21 di grafik. Tetapi agricolae::friedman() salah memberi label sampel jika trt berupa factor yang urutan level-nya tidak alfabetis. Karena itu kita menulis trt = as.character(hari). Selalu cocokkan jumlah ranking di keluaran agricolae dengan hasil summarise() kalian!\n\n\nPerhatikan tulisan “Adjusted for ties” pada keluaran: agricolae juga sudah mengoreksi nilai seri.\n\ngrup &lt;- hasil_renyah$groups %&gt;%\n  tibble::rownames_to_column(\"hari\") %&gt;%\n  rename(jumlah_rank = `Sum of ranks`) %&gt;%\n  mutate(hari = factor(hari, levels = c(\"H0\", \"H7\", \"H14\", \"H21\")))\n\nggplot(grup, aes(x = hari, y = jumlah_rank)) +\n  geom_col(fill = \"#b08900\", width = 0.6) +\n  geom_text(aes(label = groups), vjust = -0.5, size = 5) +\n  labs(x = \"Lama penyimpanan (hari)\", y = \"Jumlah ranking kerenyahan\") +\n  ylim(0, max(grup$jumlah_rank) * 1.15) +\n  theme_minimal(base_size = 13)\n\n\n\n\nJumlah ranking kerenyahan selama penyimpanan. Huruf berbeda = berbeda nyata (α = 0,05)."
+  },
+  {
+    "objectID": "03-ranking-seri.html#interpretasi",
+    "href": "03-ranking-seri.html#interpretasi",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Interpretasi",
+    "text": "Interpretasi\n\nH0 dan H7 tidak berbeda nyata → selama seminggu pertama kerenyahan belum berubah.\nH14 nyata kurang renyah daripada H0 dan H7.\nH21 paling tidak renyah, berbeda nyata dari semua sampel lainnya.\n\n\nRekomendasi: dengan kemasan saat ini, kerenyahan bertahan sekitar satu minggu. Untuk pengiriman luar kota, pertimbangkan kemasan dengan penghalang uap air yang lebih baik, lalu ulangi uji ini untuk membandingkan."
+  },
+  {
+    "objectID": "03-ranking-seri.html#tantangan",
+    "href": "03-ranking-seri.html#tantangan",
+    "title": "Kasus 3 · Ranking dengan Nilai Seri",
+    "section": "Tantangan",
+    "text": "Tantangan\n\nTantangan 3.1: Ulangi Contoh 8.6 dari buku\nContoh 8.6 di Meilgaard dkk. membahas manajer QC pabrik bir yang mencurigai merek P lebih pahit daripada pesaingnya (A, B, C). Datanya (Tabel 8.2) ada di file contoh8_6_bir_meilgaard.csv dan sudah dalam bentuk ranking rata-rata.\n\nDengan R, buktikan bahwa nilai statistik T′ = 13,3 seperti di buku.\nBir mana yang berbeda nyata dengan P? Apakah kesimpulan kalian sama dengan buku?\n\n\n\nTantangan 3.2: Apa jadinya kalau nilai seri ditangani dengan salah?\nAnalisis ulang data keripik dengan dua cara yang keliru:\n\nLangsung memakai angka mentah yang ditulis panelis (kolom tulisan), tanpa rank().\nMembuang semua panelis yang memberi nilai seri.\n\nBandingkan nilai chi-kuadrat, nilai p, dan huruf notasi dari kedua cara ini dengan analisis yang benar (Langkah 4–5). Jelaskan mengapa ranking rata-rata adalah pilihan terbaik.\n\n\nTantangan 3.3: Sampel mana yang paling sulit dibedakan?\nDari panelis yang memberi nilai seri, pasangan sampel mana yang paling sering dinilai sama? Apakah hasil ini konsisten dengan huruf notasi di Langkah 5?\nPetunjuk: untuk setiap panelis, cari sampel yang memiliki ranking yang sama (duplicated() atau add_count()), lalu hitung kombinasinya."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html",
+    "href": "01b-specified-tetrad.html",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "",
+    "text": "Sebuah produsen minuman di Yogyakarta memakai gula semut (gula kelapa kristal) untuk tiga produknya: teh, kopi, dan wedang jahe. Pemasok lama tidak sanggup lagi memenuhi pesanan, jadi perusahaan ingin beralih ke pemasok baru dari Kulon Progo yang harganya lebih murah.\nSyaratnya: kemanisan ketiga produk tidak boleh berubah, baik menjadi lebih manis maupun kurang manis. Atribut lain (warna, aroma karamel) sudah dicek oleh tim QC dan dianggap setara.\nTujuan uji: menentukan apakah konsumen merasakan perbedaan kemanisan antara minuman yang dibuat dengan gula semut pemasok lama dan pemasok baru, untuk setiap jenis minuman."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#desain-uji",
+    "href": "01b-specified-tetrad.html#desain-uji",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Desain uji",
+    "text": "Desain uji\nKasus ini mengikuti Contoh 8.3 di Meilgaard dkk. (Bagian 8.3).\n\nSetiap panelis menerima 4 gelas: 2 gelas dengan gula pemasok lama (A) dan 2 gelas dengan gula pemasok baru (B).\nAda 6 urutan penyajian (AABB, ABAB, ABBA, BAAB, BABA, BBAA), masing-masing dipakai sama banyak.\nInstruksi: “Pilih dua sampel yang paling manis.” Panelis wajib memilih, walaupun ragu.\nSetiap jenis minuman diuji oleh 30 konsumen yang berbeda (teh, kopi, wedang jahe = 3 uji terpisah).\n\n\nBerapa peluang menebak?\nAda 6 cara memilih 2 dari 4 sampel:\n\nchoose(4, 2)\n\n[1] 6\n\n\nDari 6 kemungkinan itu, hanya 1 yang berisi kedua sampel lama (A-A), dan hanya 1 yang berisi kedua sampel baru (B-B). Empat sisanya adalah pasangan campuran (A-B). Jika panelis hanya menebak:\n\n\n\nJenis pilihan\nArti\nPeluang menebak\n\n\n\n\nlama-lama\ngula lama terasa lebih manis\n1/6\n\n\nbaru-baru\ngula baru terasa lebih manis\n1/6\n\n\nlama-baru\npanelis tidak menangkap perbedaan\n4/6\n\n\n\n\n\n\n\n\n\nCatatanBedanya dengan tetrad biasa (Kasus 1)\n\n\n\nPada tetrad biasa, panelis cukup mengelompokkan sampel, jadi peluang menebaknya 1/3. Pada specified tetrad, panelis harus menunjuk arah perbedaan (mana yang lebih manis). Peluang menebaknya lebih kecil (1/6), dan kita tahu sampel mana yang lebih manis."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#satu-sisi-atau-dua-sisi",
+    "href": "01b-specified-tetrad.html#satu-sisi-atau-dua-sisi",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Satu sisi atau dua sisi?",
+    "text": "Satu sisi atau dua sisi?\nPerusahaan tidak ingin kemanisan berubah ke arah mana pun. Jadi ada dua kemungkinan kegagalan: gula lama lebih manis, atau gula baru lebih manis. Ini adalah uji dua sisi.\nCara mengujinya:\n\nHitung jumlah panelis yang memilih lama-lama dan yang memilih baru-baru.\nUji masing-masing arah dengan uji binomial satu sisi (peluang tebakan 1/6), memakai α/2 = 0,025. Risiko total untuk kedua arah tetap α = 0,05."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#langkah-1-membaca-data",
+    "href": "01b-specified-tetrad.html#langkah-1-membaca-data",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Langkah 1 — Membaca data",
+    "text": "Langkah 1 — Membaca data\n\ngula &lt;- read.csv(\"data/kasus1b_specified_tetrad_gula_semut.csv\")\nhead(gula)\n\n\n  \n\n\n\n\n\n\n\n\n\n\nKolom\nArti\n\n\n\n\nproduk\njenis minuman: teh, kopi, wedang\n\n\npanelis\nkode panelis\n\n\nurutan\nurutan penyajian (A = pemasok lama, B = pemasok baru)\n\n\nkode_lama, kode_baru\nkode 3 digit sampel A dan B\n\n\nurutan_kode\nkode sampel dari kiri ke kanan di nampan\n\n\npilihan_paling_manis\ndua kode yang dipilih panelis\n\n\njenis_pilihan\njenis sampel yang dipilih: lama-lama, baru-baru, atau lama-baru\n\n\n\nKita mulai dengan teh.\n\nteh &lt;- gula %&gt;% filter(produk == \"teh\")\ntable(teh$urutan)\n\n\nAABB ABAB ABBA BAAB BABA BBAA \n   5    5    5    5    5    5 \n\n\nDesain seimbang (masing-masing 5) ✔️"
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#langkah-2-hitung-jenis-pilihan",
+    "href": "01b-specified-tetrad.html#langkah-2-hitung-jenis-pilihan",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Langkah 2 — Hitung jenis pilihan",
+    "text": "Langkah 2 — Hitung jenis pilihan\n\ntable(teh$jenis_pilihan)\n\n\nbaru-baru lama-baru lama-lama \n        3        16        11 \n\n\n\nn_total    &lt;- nrow(teh)\nn_lamalama &lt;- sum(teh$jenis_pilihan == \"lama-lama\")\nn_barubaru &lt;- sum(teh$jenis_pilihan == \"baru-baru\")\nc(total = n_total, lama_lama = n_lamalama, baru_baru = n_barubaru)\n\n    total lama_lama baru_baru \n       30        11         3 \n\n\nJika panelis hanya menebak, kita berharap sekitar 30 × 1/6 = 5 panelis untuk setiap arah."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#langkah-3-nilai-kritis-dengan-findcr",
+    "href": "01b-specified-tetrad.html#langkah-3-nilai-kritis-dengan-findcr",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Langkah 3 — Nilai kritis dengan findcr()",
+    "text": "Langkah 3 — Nilai kritis dengan findcr()\nFungsi findcr() dari paket sensR memberi jumlah minimum jawaban agar hasilnya signifikan. Karena uji dua sisi, kita pakai α/2 = 0,025 untuk setiap arah.\n\nkritis &lt;- findcr(sample.size = n_total, alpha = 0.05 / 2, p0 = 1/6)\nkritis\n\n[1] 10\n\n\nArtinya, jika 10 atau lebih dari 30 panelis memilih arah yang sama, perbedaan kemanisannya signifikan.\n\nlama-lama = 11 → mencapai nilai kritis, jadi signifikan\nbaru-baru = 3 → di bawah nilai kritis, jadi tidak signifikan"
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#langkah-4-nilai-p-dengan-binom.test",
+    "href": "01b-specified-tetrad.html#langkah-4-nilai-p-dengan-binom.test",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Langkah 4 — Nilai p dengan binom.test()",
+    "text": "Langkah 4 — Nilai p dengan binom.test()\nNilai kritis sudah cukup untuk mengambil keputusan, tetapi laporan ilmiah biasanya mencantumkan nilai p.\n\nuji_lama &lt;- binom.test(n_lamalama, n_total, p = 1/6, alternative = \"greater\")\nuji_baru &lt;- binom.test(n_barubaru, n_total, p = 1/6, alternative = \"greater\")\n\ndata.frame(arah    = c(\"gula lama lebih manis\", \"gula baru lebih manis\"),\n           jumlah  = c(n_lamalama, n_barubaru),\n           p_value = round(c(uji_lama$p.value, uji_baru$p.value), 4),\n           signifikan = c(uji_lama$p.value, uji_baru$p.value) &lt; 0.025)\n\n\n  \n\n\n\nBandingkan nilai p dengan 0,025 (bukan 0,05), karena kita menguji dua arah."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#langkah-5-seberapa-banyak-konsumen-yang-merasakan",
+    "href": "01b-specified-tetrad.html#langkah-5-seberapa-banyak-konsumen-yang-merasakan",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Langkah 5 — Seberapa banyak konsumen yang merasakan?",
+    "text": "Langkah 5 — Seberapa banyak konsumen yang merasakan?\nProporsi pemilih lama-lama yang teramati adalah pc = 11/30. Sebagian dari mereka hanya beruntung menebak. Fungsi pc2pd() mengoreksi tebakan itu dan memberi pd, yaitu perkiraan proporsi konsumen yang benar-benar merasakan gula lama lebih manis.\n\npc_lama &lt;- n_lamalama / n_total\npc2pd(pc_lama, Pguess = 1/6)\n\n[1] 0.24"
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#langkah-6-visualisasi",
+    "href": "01b-specified-tetrad.html#langkah-6-visualisasi",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Langkah 6 — Visualisasi",
+    "text": "Langkah 6 — Visualisasi\n\nteh %&gt;%\n  count(jenis_pilihan) %&gt;%\n  ggplot(aes(x = jenis_pilihan, y = n, fill = jenis_pilihan)) +\n  geom_col(width = 0.6, show.legend = FALSE) +\n  geom_hline(yintercept = n_total / 6, linetype = \"dashed\") +\n  scale_fill_manual(values = c(\"baru-baru\" = \"#2f9e44\",\n                               \"lama-baru\" = \"grey70\",\n                               \"lama-lama\" = \"#9c36b5\")) +\n  labs(x = \"Dua sampel yang dipilih paling manis\", y = \"Jumlah panelis\") +\n  theme_minimal(base_size = 13)\n\n\n\n\nJenis pilihan panelis pada uji specified tetrad (teh). Garis putus-putus = jumlah yang diharapkan jika menebak (5)."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#interpretasi",
+    "href": "01b-specified-tetrad.html#interpretasi",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Interpretasi",
+    "text": "Interpretasi\n\nPada uji specified tetrad dengan 30 konsumen, 11 panelis memilih kedua sampel teh dengan gula pemasok lama sebagai yang paling manis, sedangkan hanya 3 panelis memilih kedua sampel gula baru. Jumlah 11 melebihi nilai kritis 10 (α = 0,05 dua sisi; p = 0,007). Artinya, teh dengan gula pemasok baru terasa nyata kurang manis. Diperkirakan sekitar 24% konsumen merasakan perbedaan ini. Pemasok baru belum dapat dipakai untuk teh tanpa penyesuaian formula."
+  },
+  {
+    "objectID": "01b-specified-tetrad.html#tantangan",
+    "href": "01b-specified-tetrad.html#tantangan",
+    "title": "Kasus 1b · Uji Specified Tetrad",
+    "section": "Tantangan",
+    "text": "Tantangan\n\nTantangan 1b.1: Kopi dan wedang jahe\nUlangi Langkah 1–5 untuk kopi dan wedang jahe.\n\nBuat satu tabel ringkasan berisi: produk, jumlah lama-lama, jumlah baru-baru, nilai kritis, nilai p untuk setiap arah, dan kesimpulan.\nUntuk produk mana saja pemasok baru boleh dipakai? Hati-hati dengan kata “boleh”: apakah hasil tidak signifikan cukup untuk menyatakan kemanisannya sama? (Ingat Kasus 1.)\n\n\n\nTantangan 1b.2: Kasus satu sisi\nUntuk produk teh, tim R&D membuat formula baru: gula pemasok baru ditambah 10% agar kemanisannya menyamai formula lama. Mereka yakin formula ini kini lebih manis daripada formula yang memakai gula baru tanpa tambahan, dan hanya ingin membuktikannya.\nUji specified tetrad dengan 36 konsumen: 13 memilih kedua sampel formula tambahan 10% sebagai yang paling manis.\n\nApakah ini uji satu sisi atau dua sisi? Jelaskan.\nBerapa nilai kritisnya? Berapa nilai p-nya?\nApa kesimpulannya?\n\n\n\nTantangan 1b.3: Merencanakan jumlah panelis\nUntuk uji ulang pada wedang jahe, perusahaan ingin peluang 80% untuk menangkap perbedaan jika sebenarnya 25% konsumen merasakan salah satu arah (pd = 0,25). Gunakan α = 0,025 untuk setiap arah.\n\nBerapa power uji yang sudah dilakukan (30 panelis)?\nBerapa panelis yang dibutuhkan untuk mencapai power 80%?\n\nPetunjuk: fungsi sensR yang namanya diawali discrim dan diakhiri Pwr atau SS. Jangan lupa pGuess = 1/6.\n\n\nTantangan 1b.4: Cek Contoh 8.3 di buku\nPada Contoh 8.3 (pengisi untuk pemanis), 24 panelis menguji setiap minuman. Jumlah pilihan “kedua sampel kandidat lebih manis” dan “kedua sampel standar lebih manis” adalah:\n\n\n\nMinuman\nKandidat lebih manis\nStandar lebih manis\n\n\n\n\nLimun\n1\n5\n\n\nTeh\n3\n4\n\n\nKopi\n6\n4\n\n\n\n\nDengan findcr(), cari nilai kritis untuk 24 panelis, uji dua sisi, α = 0,05.\nBuku menyebut nilai kritisnya 8. Apakah hasil kalian sama? Jika berbeda, coba alpha = 0.05 (tanpa dibagi dua). Diskusikan kemungkinan penyebab perbedaannya.\nApakah kesimpulan buku (tidak ada perbedaan kemanisan) berubah?"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Uji Perbedaan Atribut: Studi Kasus dengan R",
+    "section": "",
+    "text": "Uji perbedaan atribut (attribute difference test) menjawab pertanyaan: “Bagaimana atribut X berbeda di antara sampel-sampel ini?” Berbeda dengan uji perbedaan keseluruhan (misalnya uji segitiga), di sini panelis hanya memperhatikan satu atribut — misalnya kemanisan, kepedasan, atau kerenyahan.\nDi praktikum ini kalian akan mengerjakan empat studi kasus. Setiap kasus berisi:\n\nCerita masalah dari industri pangan.\nData (file CSV) yang bisa diunduh.\nAnalisis terpandu dengan skrip R yang siap dijalankan.\nTantangan — soal tanpa skrip. Kalian harus menulis skrip sendiri (pendek saja!) dengan memodifikasi skrip yang sudah ada.\n\n\n\n\nKasus\nProduk\nMetode\nFungsi R utama\n\n\n\n\n1\nKopi susu gula aren\nUji tetrad\nsensR::discrim()\n\n\n1b\nGula semut di teh, kopi, wedang jahe\nUji specified tetrad\nsensR::findcr(), binom.test()\n\n\n2\nSambal bawang\nUji ranking sederhana (Friedman)\nfriedman.test(), agricolae::friedman()\n\n\n3\nKeripik tempe\nUji ranking dengan nilai seri (ties)\nrank(), agricolae::friedman()"
+  },
+  {
+    "objectID": "index.html#tentang-praktikum-ini",
+    "href": "index.html#tentang-praktikum-ini",
+    "title": "Uji Perbedaan Atribut: Studi Kasus dengan R",
+    "section": "",
+    "text": "Uji perbedaan atribut (attribute difference test) menjawab pertanyaan: “Bagaimana atribut X berbeda di antara sampel-sampel ini?” Berbeda dengan uji perbedaan keseluruhan (misalnya uji segitiga), di sini panelis hanya memperhatikan satu atribut — misalnya kemanisan, kepedasan, atau kerenyahan.\nDi praktikum ini kalian akan mengerjakan empat studi kasus. Setiap kasus berisi:\n\nCerita masalah dari industri pangan.\nData (file CSV) yang bisa diunduh.\nAnalisis terpandu dengan skrip R yang siap dijalankan.\nTantangan — soal tanpa skrip. Kalian harus menulis skrip sendiri (pendek saja!) dengan memodifikasi skrip yang sudah ada.\n\n\n\n\nKasus\nProduk\nMetode\nFungsi R utama\n\n\n\n\n1\nKopi susu gula aren\nUji tetrad\nsensR::discrim()\n\n\n1b\nGula semut di teh, kopi, wedang jahe\nUji specified tetrad\nsensR::findcr(), binom.test()\n\n\n2\nSambal bawang\nUji ranking sederhana (Friedman)\nfriedman.test(), agricolae::friedman()\n\n\n3\nKeripik tempe\nUji ranking dengan nilai seri (ties)\nrank(), agricolae::friedman()"
+  },
+  {
+    "objectID": "index.html#persiapan",
+    "href": "index.html#persiapan",
+    "title": "Uji Perbedaan Atribut: Studi Kasus dengan R",
+    "section": "Persiapan",
+    "text": "Persiapan\n\n1. Instal paket (cukup sekali)\n\ninstall.packages(c(\"sensR\", \"agricolae\", \"dplyr\", \"tidyr\", \"ggplot2\"))\n\n\nsensR — paket khusus uji diskriminasi sensori (tetrad, segitiga, duo-trio, 2-AFC, dll.).\nagricolae — berisi fungsi friedman() yang langsung memberi uji lanjut dan huruf notasi.\ndplyr, tidyr, ggplot2 — untuk merapikan data dan membuat grafik.\n\n\n\n2. Siapkan folder kerja\n\nBuat RStudio Project baru, misalnya praktikum-uji-atribut.\nDi dalam folder project, buat folder bernama data.\nUnduh semua file data di bawah ini dan simpan di folder data.\n\n\n\n\nFile\nDipakai di\n\n\n\n\nkasus1_tetrad_kopi.csv\nKasus 1\n\n\nkasus1b_specified_tetrad_gula_semut.csv\nKasus 1b\n\n\nkasus2_ranking_sambal.csv\nKasus 2\n\n\nkasus3_ranking_seri_keripik.csv\nKasus 3\n\n\ncontoh8_6_bir_meilgaard.csv\nTantangan Kasus 3\n\n\n\n\n\n3. Kerjakan di file R Markdown / Quarto\nBuat satu file R Markdown (.Rmd) per kasus. Salin skrip dari situs ini ke dalam chunk, jalankan, lalu tulis interpretasi kalian di bawahnya dengan kalimat sendiri.\n\n# baris pertama di setiap file kerja kalian\nlibrary(sensR)\nlibrary(agricolae)\nlibrary(dplyr)\nlibrary(tidyr)\nlibrary(ggplot2)"
+  },
+  {
+    "objectID": "index.html#tiga-konsep-yang-harus-dipegang",
+    "href": "index.html#tiga-konsep-yang-harus-dipegang",
+    "title": "Uji Perbedaan Atribut: Studi Kasus dengan R",
+    "section": "Tiga konsep yang harus dipegang",
+    "text": "Tiga konsep yang harus dipegang\n\n\n\n\n\n\nCatatan1. Satu sisi atau dua sisi?\n\n\n\nYang menentukan adalah hipotesis alternatif, bukan jumlah pilihan jawaban di lembar uji. Jika kita hanya ingin membuktikan bahwa sampel B lebih pahit (karena sengaja ditambah hop), itu satu sisi. Jika kita ingin tahu mana yang lebih pahit, itu dua sisi.\n\n\n\n\n\n\n\n\nCatatan2. Tidak signifikan ≠ sama\n\n\n\nHasil uji perbedaan yang tidak signifikan bukan bukti bahwa sampel sama. Untuk menyatakan “sama” kita butuh uji kemiripan (similarity test) dengan batas perbedaan yang ditetapkan di awal. Ini dibahas di Kasus 1.\n\n\n\n\n\n\n\n\nCatatan3. Data ranking adalah data ordinal\n\n\n\nRanking hanya memberi urutan, bukan besar perbedaan. Karena itu analisisnya memakai uji Friedman (non-parametrik), bukan ANOVA."
+  },
+  {
+    "objectID": "01-tetrad.html",
+    "href": "01-tetrad.html",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "",
+    "text": "Kedai kopi “Kopi Lereng” di Yogyakarta ingin mengurangi gula pada menu andalannya, es kopi susu gula aren. Tim R&D membuat dua formula baru:\n\nF20 — gula aren dikurangi 20%, kekurangannya diganti stevia.\nF40 — gula aren dikurangi 40%, kekurangannya diganti stevia.\n\nPemilik kedai hanya punya satu syarat: pelanggan tidak boleh merasakan kopi menjadi kurang manis atau lebih manis. Atribut lain (aroma kopi, rasa susu) sudah dicek oleh tim R&D dan dianggap setara.\nTujuan uji: menentukan apakah konsumen dapat membedakan kemanisan formula baru dengan formula asli."
+  },
+  {
+    "objectID": "01-tetrad.html#desain-uji",
+    "href": "01-tetrad.html#desain-uji",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Desain uji",
+    "text": "Desain uji\nUji tetrad dipilih karena lebih sensitif daripada uji segitiga, padahal peluang menebaknya sama (1/3). Artinya, dengan jumlah panelis yang sama, tetrad lebih mampu menangkap perbedaan kecil.\n\nSetiap panelis menerima 4 gelas: 2 gelas formula asli (A) dan 2 gelas formula baru (B).\nAda 6 kemungkinan urutan penyajian: AABB, ABAB, ABBA, BAAB, BABA, BBAA. Masing-masing dipakai sama banyak dan dibagikan secara acak.\nInstruksi: “Kelompokkan keempat sampel menjadi dua pasang berdasarkan kemiripan rasa manis.”\nJawaban benar jika kedua sampel A berada dalam satu kelompok (otomatis kedua B di kelompok lain).\n48 konsumen menguji F20 dan 48 konsumen lain menguji F40.\n\n\n\n\n\n\n\nTipTetrad di buku vs. di kasus ini\n\n\n\nMeilgaard dkk. (Bagian 8.3) juga menjelaskan versi specified tetrad: panelis diminta memilih dua sampel yang paling manis. Peluang menebaknya 1/6. Di kasus ini kita memakai versi pengelompokan (seperti lembar uji Gambar 8.2), dengan peluang menebak 1/3. Versi specified muncul di Tantangan 1.4."
+  },
+  {
+    "objectID": "01-tetrad.html#langkah-1-membaca-data",
+    "href": "01-tetrad.html#langkah-1-membaca-data",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Langkah 1 — Membaca data",
+    "text": "Langkah 1 — Membaca data\n\nkopi &lt;- read.csv(\"data/kasus1_tetrad_kopi.csv\")\nhead(kopi)\n\n\n  \n\n\n\nArti kolom:\n\n\n\nKolom\nArti\n\n\n\n\npanelis\nkode panelis\n\n\nformula\nformula yang diuji (F20 atau F40)\n\n\nurutan\nurutan penyajian (A = asli, B = formula baru)\n\n\nkode_A, kode_B\nkode 3 digit untuk sampel A dan B\n\n\nurutan_kode\nkode sampel dari kiri ke kanan di nampan\n\n\nkelompok_1, kelompok_2\njawaban panelis\n\n\nbenar\n1 = pengelompokan benar, 0 = salah\n\n\n\nKita mulai dengan F20 saja.\n\nf20 &lt;- kopi %&gt;% filter(formula == \"F20\")\nnrow(f20)\n\n[1] 48"
+  },
+  {
+    "objectID": "01-tetrad.html#langkah-2-cek-desain-penyajian",
+    "href": "01-tetrad.html#langkah-2-cek-desain-penyajian",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Langkah 2 — Cek desain penyajian",
+    "text": "Langkah 2 — Cek desain penyajian\nSebelum menganalisis, selalu cek apakah urutan penyajian seimbang.\n\ntable(f20$urutan)\n\n\nAABB ABAB ABBA BAAB BABA BBAA \n   8    8    8    8    8    8 \n\n\nKeenam urutan muncul masing-masing 8 kali → desain seimbang ✔️"
+  },
+  {
+    "objectID": "01-tetrad.html#langkah-3-hitung-jumlah-jawaban-benar",
+    "href": "01-tetrad.html#langkah-3-hitung-jumlah-jawaban-benar",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Langkah 3 — Hitung jumlah jawaban benar",
+    "text": "Langkah 3 — Hitung jumlah jawaban benar\n\nbenar &lt;- sum(f20$benar)\ntotal &lt;- nrow(f20)\nbenar\n\n[1] 21\n\ntotal\n\n[1] 48\n\n\nJika panelis hanya menebak, kita berharap sekitar 1/3 × 48 = 16 jawaban benar. Kita mendapat 21. Apakah selisih ini cukup besar untuk disebut berbeda?"
+  },
+  {
+    "objectID": "01-tetrad.html#langkah-4-uji-perbedaan-dengan-discrim",
+    "href": "01-tetrad.html#langkah-4-uji-perbedaan-dengan-discrim",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Langkah 4 — Uji perbedaan dengan discrim()",
+    "text": "Langkah 4 — Uji perbedaan dengan discrim()\nSatu fungsi dari paket sensR sudah mengerjakan semuanya:\n\nhasil_f20 &lt;- discrim(benar, total, method = \"tetrad\")\nhasil_f20\n\n\nEstimates for the tetrad discrimination protocol with 21 correct\nanswers in 48 trials. One-sided p-value and 95 % two-sided confidence\nintervals are based on the 'exact' binomial test. \n\n        Estimate Std. Error  Lower  Upper\npc        0.4375     0.0716 0.3333 0.5882\npd        0.1562     0.1074 0.0000 0.3823\nd-prime   0.7853     0.2944 0.0000 1.3231\n\nResult of difference test:\n'exact' binomial test:  p-value = 0.086 \nAlternative hypothesis: d-prime is greater than 0 \n\n\n\nCara membaca hasil\n\n\n\n\n\n\n\nBaris\nArti\n\n\n\n\npc\nproporsi jawaban benar yang teramati (21/48)\n\n\npd\nproporsi panelis yang benar-benar bisa membedakan (setelah dikoreksi tebakan)\n\n\nd-prime (d′)\nukuran besar perbedaan sensori menurut model Thurstonian. Tidak tergantung metode uji, jadi bisa dibandingkan antar-metode\n\n\np-value\npeluang mendapat ≥ 21 jawaban benar jika sebenarnya tidak ada perbedaan\n\n\n\nNilai p = 0.086 &gt; 0,05, jadi tidak ada bukti bahwa konsumen dapat membedakan kemanisan F20 dari formula asli.\n\nplot(hasil_f20)\n\n\n\n\nModel Thurstonian: sebaran intensitas manis yang dirasakan untuk formula asli (garis putus-putus) dan F20 (garis merah). Jarak kedua puncak = d′."
+  },
+  {
+    "objectID": "01-tetrad.html#langkah-5-apakah-f20-boleh-disebut-sama-manis",
+    "href": "01-tetrad.html#langkah-5-apakah-f20-boleh-disebut-sama-manis",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Langkah 5 — Apakah F20 boleh disebut “sama manis”?",
+    "text": "Langkah 5 — Apakah F20 boleh disebut “sama manis”?\nHati-hati! Tidak signifikan bukan berarti sama. Bisa jadi panelis kita terlalu sedikit untuk mendeteksi perbedaan. Untuk menyatakan “sama”, kita harus melakukan uji kemiripan.\nSebelum uji dilakukan, pemilik kedai menetapkan batas: “Saya bisa terima kalau paling banyak 20% pelanggan bisa membedakan.” Jadi pd₀ = 0,20.\n\nH₀: pd ≥ 0,20 (perbedaannya terlalu besar)\nH₁: pd &lt; 0,20 (cukup mirip)\n\n\nkemiripan_f20 &lt;- discrim(benar, total, method = \"tetrad\",\n                         test = \"similarity\", pd0 = 0.20)\nkemiripan_f20\n\n\nEstimates for the tetrad discrimination protocol with 21 correct\nanswers in 48 trials. One-sided p-value and 95 % two-sided confidence\nintervals are based on the 'exact' binomial test. \n\n        Estimate Std. Error  Lower  Upper\npc        0.4375     0.0716 0.3333 0.5882\npd        0.1562     0.1074 0.0000 0.3823\nd-prime   0.7853     0.2944 0.0000 1.3231\n\nResult of similarity test:\n'exact' binomial test:  p-value = 0.3986 \nAlternative hypothesis: pd is less than 0.2 \n\n\nNilai p = 0.399 → kita tidak bisa menyimpulkan bahwa F20 mirip. Perhatikan juga selang kepercayaan 95% untuk pd: batas atasnya 0.38, artinya mungkin saja hingga sekitar 38% konsumen bisa membedakan.\n\n\n\n\n\n\nPentingKesimpulan sementara\n\n\n\nUji perbedaan tidak signifikan, tetapi uji kemiripan juga tidak signifikan. Hasilnya belum meyakinkan — bukan “sama”, bukan juga “berbeda”. Penyebab utamanya: jumlah panelis kurang."
+  },
+  {
+    "objectID": "01-tetrad.html#langkah-6-seberapa-kuat-uji-kita",
+    "href": "01-tetrad.html#langkah-6-seberapa-kuat-uji-kita",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Langkah 6 — Seberapa kuat uji kita?",
+    "text": "Langkah 6 — Seberapa kuat uji kita?\nPower adalah peluang uji kita mendeteksi perbedaan jika perbedaan itu memang ada. Misalkan perbedaan yang dianggap penting adalah d′ = 1:\n\nd.primePwr(d.primeA = 1, sample.size = 48, method = \"tetrad\")\n\n[1] 0.7372505\n\n\nDengan 48 panelis, peluang kita menangkap perbedaan sebesar d′ = 1 hanya sekitar 74%."
+  },
+  {
+    "objectID": "01-tetrad.html#laporan-singkat-contoh",
+    "href": "01-tetrad.html#laporan-singkat-contoh",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Laporan singkat (contoh)",
+    "text": "Laporan singkat (contoh)\n\nUji tetrad dengan 48 konsumen menunjukkan bahwa 21 panelis mengelompokkan sampel dengan benar (pc = 0,44; d′ = 0,79; p = 0,086). Tidak ada bukti perbedaan kemanisan antara F20 dan formula asli pada α = 0,05. Namun uji kemiripan (pd₀ = 0,20) juga tidak signifikan (p = 0,40), sehingga kesetaraan kemanisan belum dapat dinyatakan. Disarankan menambah jumlah panelis."
+  },
+  {
+    "objectID": "01-tetrad.html#tantangan",
+    "href": "01-tetrad.html#tantangan",
+    "title": "Kasus 1 · Uji Tetrad",
+    "section": "Tantangan",
+    "text": "Tantangan\nKerjakan tanpa melihat skrip jawaban. Kalian cukup memodifikasi skrip di atas.\n\nTantangan 1.1: Formula F40\nLakukan analisis lengkap (Langkah 2–4) untuk formula F40.\n\nBerapa jumlah jawaban benar? Berapa nilai pc, pd, d′, dan p?\nApa kesimpulan kalian untuk pemilik kedai?\nBandingkan d′ dari F20 dan F40. Apakah urutannya masuk akal secara formulasi?\n\n\n\nTantangan 1.2: Berapa panelis yang dibutuhkan?\nPemilik kedai ingin mengulang uji kemiripan untuk F20 dengan pd₀ = 0,20, α = 0,05, dan power 80%, dengan asumsi bahwa sebenarnya tidak ada perbedaan (pd = 0).\nBerapa panelis yang dibutuhkan?\nPetunjuk: cari fungsi di sensR yang namanya berakhiran SS (sample size). Ingat bahwa peluang menebak pada tetrad adalah 1/3.\n\n\nTantangan 1.3: Mengapa tetrad, bukan segitiga?\n\nHitung berapa panelis yang dibutuhkan untuk mendeteksi perbedaan sebesar d′ = 1 (α = 0,05, power 80%) dengan uji tetrad, lalu dengan uji segitiga.\nGunakan d′ dari F40 (Tantangan 1.1). Berapa proporsi jawaban benar yang diharapkan jika F40 diuji dengan uji segitiga?\nJelaskan dalam 2–3 kalimat mengapa tetrad lebih efisien, padahal peluang menebaknya sama (1/3).\n\nPetunjuk: lihat ?d.primeSS dan ?psyfun.\n\n\nTantangan 1.4: Versi specified tetrad dari buku\nTim R&D mengulang uji F40 dengan 48 konsumen baru, tetapi kali ini memakai versi specified tetrad: “Pilih dua sampel yang paling manis.” Hasilnya:\n\n15 panelis memilih kedua sampel asli sebagai yang paling manis,\n5 panelis memilih kedua sampel F40,\n28 panelis memilih satu asli dan satu F40.\n\nTim R&D sudah menduga F40 kurang manis, jadi ujinya satu sisi.\n\nJika panelis hanya menebak, berapa peluang mereka memilih tepat kedua sampel asli? (Ada berapa cara memilih 2 dari 4 sampel?)\nUji dengan fungsi R yang sesuai. Apakah F40 nyata kurang manis?\nBerapa jumlah minimum jawaban yang dibutuhkan agar signifikan pada α = 0,05 untuk 48 panelis?"
+  },
+  {
+    "objectID": "02-ranking.html",
+    "href": "02-ranking.html",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "",
+    "text": "Sebuah UMKM sambal bawang di Bantul ingin menjual sambalnya dalam beberapa level kepedasan di kemasan. Mereka membuat empat formula dengan kadar cabai rawit berbeda:\n\n\n\nKode sampel\nFormula\nCabai rawit\n\n\n\n\n381\nS10\n10%\n\n\n527\nS15\n15%\n\n\n649\nS20\n20%\n\n\n812\nS25\n25%\n\n\n\nCabai rawit sedang mahal, jadi pemilik usaha bertanya: “Apakah konsumen benar-benar merasakan bedanya? Formula mana yang layak dijadikan level berbeda?”\nTujuan uji: mengurutkan keempat formula berdasarkan kepedasan yang dirasakan konsumen dan menentukan formula mana yang berbeda nyata."
+  },
+  {
+    "objectID": "02-ranking.html#desain-uji",
+    "href": "02-ranking.html#desain-uji",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Desain uji",
+    "text": "Desain uji\n\n40 konsumen menerima keempat sampel sekaligus dengan urutan acak dan seimbang.\nInstruksi: “Urutkan sampel berdasarkan kepedasan. Beri angka 1 untuk yang paling tidak pedas dan 4 untuk yang paling pedas. Tidak boleh ada nilai yang sama.”\nPada lembar uji yang sama, panelis juga mengurutkan aroma bawang goreng (dipakai di Tantangan).\n\nIni adalah uji ranking sederhana (Meilgaard dkk., Bagian 8.6). Desainnya adalah randomized complete block: setiap panelis = satu blok, dan setiap blok berisi semua sampel."
+  },
+  {
+    "objectID": "02-ranking.html#langkah-1-membaca-data",
+    "href": "02-ranking.html#langkah-1-membaca-data",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Langkah 1 — Membaca data",
+    "text": "Langkah 1 — Membaca data\n\nsambal &lt;- read.csv(\"data/kasus2_ranking_sambal.csv\", check.names = FALSE)\nhead(sambal)\n\n\n  \n\n\n\ncheck.names = FALSE menjaga nama kolom tetap seperti aslinya (misalnya Kepedasan [Sampel 381]). Tanpa itu, R akan mengubah spasi dan tanda kurung menjadi titik."
+  },
+  {
+    "objectID": "02-ranking.html#langkah-2-cek-kualitas-data",
+    "href": "02-ranking.html#langkah-2-cek-kualitas-data",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Langkah 2 — Cek kualitas data",
+    "text": "Langkah 2 — Cek kualitas data\nSetiap panelis harus memberi ranking 1, 2, 3, dan 4 masing-masing satu kali, sehingga jumlahnya selalu 1 + 2 + 3 + 4 = 10.\n\nkolom_pedas &lt;- grep(\"Kepedasan\", names(sambal))\ntable(rowSums(sambal[, kolom_pedas]))\n\n\n10 \n40 \n\n\nSemua 40 panelis memiliki jumlah 10 ✔️"
+  },
+  {
+    "objectID": "02-ranking.html#langkah-3-ubah-ke-format-panjang-long-format",
+    "href": "02-ranking.html#langkah-3-ubah-ke-format-panjang-long-format",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Langkah 3 — Ubah ke format panjang (long format)",
+    "text": "Langkah 3 — Ubah ke format panjang (long format)\nData ini berbentuk lebar (satu baris = satu panelis). Fungsi analisis membutuhkan bentuk panjang (satu baris = satu panelis × satu sampel).\n\npedas &lt;- sambal %&gt;%\n  pivot_longer(cols = starts_with(\"Kepedasan\"),\n               names_to = \"kode\",\n               names_pattern = \"\\\\[Sampel (\\\\d+)\\\\]\",\n               values_to = \"rank\") %&gt;%\n  mutate(formula = recode(kode, \"381\" = \"S10\", \"527\" = \"S15\",\n                                \"649\" = \"S20\", \"812\" = \"S25\")) %&gt;%\n  select(panelis = `Kode Panelis`, kode, formula, rank)\n\nhead(pedas, 8)"
+  },
+  {
+    "objectID": "02-ranking.html#langkah-4-jumlah-ranking-rank-sum",
+    "href": "02-ranking.html#langkah-4-jumlah-ranking-rank-sum",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Langkah 4 — Jumlah ranking (rank sum)",
+    "text": "Langkah 4 — Jumlah ranking (rank sum)\n\npedas %&gt;%\n  group_by(formula) %&gt;%\n  summarise(jumlah_rank = sum(rank),\n            rata_rank   = mean(rank))\n\n\n  \n\n\n\nSemakin besar jumlah ranking, semakin pedas sampel tersebut menurut panelis."
+  },
+  {
+    "objectID": "02-ranking.html#langkah-5-uji-friedman",
+    "href": "02-ranking.html#langkah-5-uji-friedman",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Langkah 5 — Uji Friedman",
+    "text": "Langkah 5 — Uji Friedman\n\nH₀: keempat formula memiliki kepedasan yang sama.\nH₁: setidaknya satu formula berbeda.\n\n\nfriedman.test(rank ~ formula | panelis, data = pedas)\n\n\n    Friedman rank sum test\n\ndata:  rank and formula and panelis\nFriedman chi-squared = 36.09, df = 3, p-value = 7.167e-08\n\n\nNilai p sangat kecil → ada perbedaan kepedasan di antara formula. Tetapi formula mana yang berbeda?"
+  },
+  {
+    "objectID": "02-ranking.html#langkah-6-uji-lanjut-dengan-agricolaefriedman",
+    "href": "02-ranking.html#langkah-6-uji-lanjut-dengan-agricolaefriedman",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Langkah 6 — Uji lanjut dengan agricolae::friedman()",
+    "text": "Langkah 6 — Uji lanjut dengan agricolae::friedman()\nFungsi friedman() dari paket agricolae melakukan uji Friedman dan uji lanjut sekaligus, lengkap dengan huruf notasi.\n\nhasil_pedas &lt;- with(pedas,\n  friedman(judge = panelis, trt = formula, evaluation = rank,\n           alpha = 0.05, group = TRUE, console = TRUE))\n\n\nStudy: rank ~ panelis + formula \n\nformula,  Sum of the ranks\n\n    rank  r\nS10   65 40\nS15   89 40\nS20  122 40\nS25  124 40\n\nFriedman's Test\n===============\nAdjusted for ties\nCritical Value: 36.09\nP.Value Chisq: 7.167353e-08\nF Value: 16.77404\nP.Value F: 3.955083e-09 \n\nPost Hoc Analysis\n\nAlpha: 0.05 ; DF Error: 117\nt-Student: 1.980448\nLSD: 19.3663 \n\nTreatments with the same letter are not significantly different.\n\n    Sum of ranks groups\nS25          124      a\nS20          122      a\nS15           89      b\nS10           65      c\n\n\nBagian terpenting:\n\nhasil_pedas$groups\n\n\n  \n\n\n\nFormula dengan huruf yang sama tidak berbeda nyata.\n\n\n\n\n\n\nCatatanCatatan tentang LSD\n\n\n\nagricolae memakai LSD berbasis distribusi t (metode Conover). Buku Meilgaard memakai LSDrank = 1,96 × √(b·t·(t+1)/6). Kedua cara biasanya memberi kesimpulan yang serupa. Coba bandingkan di Tantangan 2.4."
+  },
+  {
+    "objectID": "02-ranking.html#langkah-7-visualisasi",
+    "href": "02-ranking.html#langkah-7-visualisasi",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Langkah 7 — Visualisasi",
+    "text": "Langkah 7 — Visualisasi\n\ngrup &lt;- hasil_pedas$groups %&gt;%\n  tibble::rownames_to_column(\"formula\") %&gt;%\n  rename(jumlah_rank = `Sum of ranks`)\n\nggplot(grup, aes(x = formula, y = jumlah_rank)) +\n  geom_col(fill = \"#d9480f\", width = 0.6) +\n  geom_text(aes(label = groups), vjust = -0.5, size = 5) +\n  labs(x = \"Formula (% cabai rawit)\", y = \"Jumlah ranking kepedasan\") +\n  ylim(0, max(grup$jumlah_rank) * 1.15) +\n  theme_minimal(base_size = 13)\n\n\n\n\nJumlah ranking kepedasan. Huruf berbeda = berbeda nyata (α = 0,05)."
+  },
+  {
+    "objectID": "02-ranking.html#interpretasi",
+    "href": "02-ranking.html#interpretasi",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Interpretasi",
+    "text": "Interpretasi\n\nS10 &lt; S15 &lt; S20: setiap kenaikan cabai dari 10% → 15% → 20% dirasakan nyata lebih pedas.\nS20 dan S25 tidak berbeda nyata: menambah cabai dari 20% ke 25% tidak membuat konsumen merasa lebih pedas.\n\n\nRekomendasi: gunakan tiga level — Level 1 (S10), Level 2 (S15), Level 3 (S20). Formula S25 tidak perlu diproduksi karena lebih mahal tanpa tambahan kepedasan yang dirasakan."
+  },
+  {
+    "objectID": "02-ranking.html#tantangan",
+    "href": "02-ranking.html#tantangan",
+    "title": "Kasus 2 · Uji Ranking Sederhana",
+    "section": "Tantangan",
+    "text": "Tantangan\n\nTantangan 2.1: Aroma bawang goreng\nPada lembar uji yang sama, panelis juga mengurutkan aroma bawang goreng (1 = paling lemah, 4 = paling kuat). Kolomnya diawali Aroma bawang goreng.\n\nCek kualitas datanya (Langkah 2).\nLakukan uji Friedman dan uji lanjut dengan agricolae.\nFormula mana yang aromanya nyata paling lemah? Apa dugaan kalian tentang penyebabnya?\n\n\n\nTantangan 2.2: Rekomendasi akhir\nGabungkan hasil kepedasan (Langkah 6) dan aroma (Tantangan 2.1). Apakah rekomendasi “tiga level: S10, S15, S20” tetap masuk akal? Tulis rekomendasi untuk pemilik UMKM dalam maksimal 5 kalimat.\n\n\nTantangan 2.3: Grafik sebaran ranking\nJumlah ranking menyembunyikan informasi: dua sampel dengan jumlah ranking sama bisa memiliki pola jawaban berbeda. Buat grafik batang bertumpuk (stacked bar) yang menunjukkan berapa panelis yang memberi ranking 1, 2, 3, dan 4 untuk setiap formula (kepedasan).\nPetunjuk: count() lalu geom_col(); ubah rank menjadi factor agar warnanya terpisah.\n\n\nTantangan 2.4: LSD versi buku\nHitung LSDrank versi Meilgaard (Persamaan 14.15): LSDrank = 1,96 × √(b · t · (t + 1) / 6), dengan b = jumlah panelis dan t = jumlah sampel.\n\nBerapa nilainya untuk data kepedasan?\nBandingkan dengan LSD dari agricolae (lihat hasil_pedas$statistics).\nApakah kesimpulan pasangan formula yang berbeda nyata berubah?"
+  }
+]

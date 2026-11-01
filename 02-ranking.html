@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="id" xml:lang="id"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.10.18">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+
+<title>Kasus 2 · Uji Ranking Sederhana – Uji Perbedaan Atribut dengan R</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: 1.5em;}
+div.column{flex: auto;}
+@media screen {
+div.columns{gap: min(4vw, 1.5em);}
+div.column{overflow-x: auto;}
+}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-64a204ab8560d761af7679ceaba22944.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-282abdd4a580632c052b6858c0510cd2.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "Tidak ada hasil",
+    "search-matching-documents-text": "dokumen cocok",
+    "search-copy-link-title": "Salin tautan untuk mencari",
+    "search-hide-matches-text": "Sembunyikan kecocokan lainnya",
+    "search-more-match-text": "kecocokan lainnya di dokumen ini",
+    "search-more-matches-text": "kecocokan lainnya di dokumen ini",
+    "search-clear-button-title": "Hapus",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Batal",
+    "search-submit-button-title": "Kirim",
+    "search-label": "Mencari"
+  }
+}</script>
+<link href="site_libs/pagedtable-1.1/css/pagedtable.css" rel="stylesheet">
+<script src="site_libs/pagedtable-1.1/js/pagedtable.js"></script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Uji Perbedaan Atribut dengan R</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Mencari"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Alihkan navigasi" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Beranda</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./01-tetrad.html"> 
+<span class="menu-text">Kasus 1 · Tetrad</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./01b-specified-tetrad.html"> 
+<span class="menu-text">Kasus 1b · Specified Tetrad</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link active" href="./02-ranking.html" aria-current="page"> 
+<span class="menu-text">Kasus 2 · Ranking</span></a>
+  </li>  
+  <li class="nav-item">
+    <a class="nav-link" href="./03-ranking-seri.html"> 
+<span class="menu-text">Kasus 3 · Ranking Seri</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Isi halaman</h2>
+   
+  <ul>
+  <li><a href="#cerita-kasus" id="toc-cerita-kasus" class="nav-link active" data-scroll-target="#cerita-kasus">Cerita kasus</a></li>
+  <li><a href="#desain-uji" id="toc-desain-uji" class="nav-link" data-scroll-target="#desain-uji">Desain uji</a></li>
+  <li><a href="#langkah-1-membaca-data" id="toc-langkah-1-membaca-data" class="nav-link" data-scroll-target="#langkah-1-membaca-data">Langkah 1 — Membaca data</a></li>
+  <li><a href="#langkah-2-cek-kualitas-data" id="toc-langkah-2-cek-kualitas-data" class="nav-link" data-scroll-target="#langkah-2-cek-kualitas-data">Langkah 2 — Cek kualitas data</a></li>
+  <li><a href="#langkah-3-ubah-ke-format-panjang-long-format" id="toc-langkah-3-ubah-ke-format-panjang-long-format" class="nav-link" data-scroll-target="#langkah-3-ubah-ke-format-panjang-long-format">Langkah 3 — Ubah ke format panjang (<em>long format</em>)</a></li>
+  <li><a href="#langkah-4-jumlah-ranking-rank-sum" id="toc-langkah-4-jumlah-ranking-rank-sum" class="nav-link" data-scroll-target="#langkah-4-jumlah-ranking-rank-sum">Langkah 4 — Jumlah ranking (<em>rank sum</em>)</a></li>
+  <li><a href="#langkah-5-uji-friedman" id="toc-langkah-5-uji-friedman" class="nav-link" data-scroll-target="#langkah-5-uji-friedman">Langkah 5 — Uji Friedman</a></li>
+  <li><a href="#langkah-6-uji-lanjut-dengan-agricolaefriedman" id="toc-langkah-6-uji-lanjut-dengan-agricolaefriedman" class="nav-link" data-scroll-target="#langkah-6-uji-lanjut-dengan-agricolaefriedman">Langkah 6 — Uji lanjut dengan <code>agricolae::friedman()</code></a></li>
+  <li><a href="#langkah-7-visualisasi" id="toc-langkah-7-visualisasi" class="nav-link" data-scroll-target="#langkah-7-visualisasi">Langkah 7 — Visualisasi</a></li>
+  <li><a href="#interpretasi" id="toc-interpretasi" class="nav-link" data-scroll-target="#interpretasi">Interpretasi</a></li>
+  <li><a href="#tantangan" id="toc-tantangan" class="nav-link" data-scroll-target="#tantangan">Tantangan</a>
+  <ul class="collapse">
+  <li><a href="#tantangan-2.1-aroma-bawang-goreng" id="toc-tantangan-2.1-aroma-bawang-goreng" class="nav-link" data-scroll-target="#tantangan-2.1-aroma-bawang-goreng">Tantangan 2.1: Aroma bawang goreng</a></li>
+  <li><a href="#tantangan-2.2-rekomendasi-akhir" id="toc-tantangan-2.2-rekomendasi-akhir" class="nav-link" data-scroll-target="#tantangan-2.2-rekomendasi-akhir">Tantangan 2.2: Rekomendasi akhir</a></li>
+  <li><a href="#tantangan-2.3-grafik-sebaran-ranking" id="toc-tantangan-2.3-grafik-sebaran-ranking" class="nav-link" data-scroll-target="#tantangan-2.3-grafik-sebaran-ranking">Tantangan 2.3: Grafik sebaran ranking</a></li>
+  <li><a href="#tantangan-2.4-lsd-versi-buku" id="toc-tantangan-2.4-lsd-versi-buku" class="nav-link" data-scroll-target="#tantangan-2.4-lsd-versi-buku">Tantangan 2.4: LSD versi buku</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<h1 class="title">Kasus 2 · Uji Ranking Sederhana</h1>
+<p class="subtitle lead">Menentukan level kepedasan sambal bawang</p>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="cerita-kasus" class="level3 kasus">
+<h3 class="anchored" data-anchor-id="cerita-kasus">Cerita kasus</h3>
+<p>Sebuah UMKM sambal bawang di Bantul ingin menjual sambalnya dalam beberapa <strong>level kepedasan</strong> di kemasan. Mereka membuat empat formula dengan kadar cabai rawit berbeda:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Kode sampel</th>
+<th>Formula</th>
+<th>Cabai rawit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>381</td>
+<td>S10</td>
+<td>10%</td>
+</tr>
+<tr class="even">
+<td>527</td>
+<td>S15</td>
+<td>15%</td>
+</tr>
+<tr class="odd">
+<td>649</td>
+<td>S20</td>
+<td>20%</td>
+</tr>
+<tr class="even">
+<td>812</td>
+<td>S25</td>
+<td>25%</td>
+</tr>
+</tbody>
+</table>
+<p>Cabai rawit sedang mahal, jadi pemilik usaha bertanya: <strong>“Apakah konsumen benar-benar merasakan bedanya? Formula mana yang layak dijadikan level berbeda?”</strong></p>
+<p><strong>Tujuan uji:</strong> mengurutkan keempat formula berdasarkan kepedasan yang dirasakan konsumen dan menentukan formula mana yang berbeda nyata.</p>
+</section>
+<section id="desain-uji" class="level2">
+<h2 class="anchored" data-anchor-id="desain-uji">Desain uji</h2>
+<ul>
+<li><strong>40 konsumen</strong> menerima keempat sampel sekaligus dengan urutan acak dan seimbang.</li>
+<li>Instruksi: <em>“Urutkan sampel berdasarkan <strong>kepedasan</strong>. Beri angka <strong>1</strong> untuk yang <strong>paling tidak pedas</strong> dan <strong>4</strong> untuk yang <strong>paling pedas</strong>. Tidak boleh ada nilai yang sama.”</em></li>
+<li>Pada lembar uji yang sama, panelis juga mengurutkan <strong>aroma bawang goreng</strong> (dipakai di Tantangan).</li>
+</ul>
+<p>Ini adalah <strong>uji ranking sederhana</strong> (Meilgaard dkk., Bagian 8.6). Desainnya adalah <em>randomized complete block</em>: setiap panelis = satu blok, dan setiap blok berisi semua sampel.</p>
+</section>
+<section id="langkah-1-membaca-data" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-1-membaca-data">Langkah 1 — Membaca data</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>sambal <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/kasus2_ranking_sambal.csv"</span>, <span class="at">check.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(sambal)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Kode Panelis"],"name":[1],"type":["chr"],"align":["left"]},{"label":["Kepedasan [Sampel 381]"],"name":[2],"type":["int"],"align":["right"]},{"label":["Kepedasan [Sampel 527]"],"name":[3],"type":["int"],"align":["right"]},{"label":["Kepedasan [Sampel 649]"],"name":[4],"type":["int"],"align":["right"]},{"label":["Kepedasan [Sampel 812]"],"name":[5],"type":["int"],"align":["right"]},{"label":["Aroma bawang goreng [Sampel 381]"],"name":[6],"type":["int"],"align":["right"]},{"label":["Aroma bawang goreng [Sampel 527]"],"name":[7],"type":["int"],"align":["right"]},{"label":["Aroma bawang goreng [Sampel 649]"],"name":[8],"type":["int"],"align":["right"]},{"label":["Aroma bawang goreng [Sampel 812]"],"name":[9],"type":["int"],"align":["right"]}],"data":[{"1":"K01","2":"3","3":"2","4":"4","5":"1","6":"1","7":"4","8":"3","9":"2","_rn_":"1"},{"1":"K02","2":"1","3":"4","4":"3","5":"2","6":"4","7":"3","8":"1","9":"2","_rn_":"2"},{"1":"K03","2":"2","3":"1","4":"3","5":"4","6":"4","7":"1","8":"3","9":"2","_rn_":"3"},{"1":"K04","2":"3","3":"2","4":"4","5":"1","6":"4","7":"3","8":"1","9":"2","_rn_":"4"},{"1":"K05","2":"3","3":"1","4":"2","5":"4","6":"3","7":"4","8":"2","9":"1","_rn_":"5"},{"1":"K06","2":"2","3":"4","4":"3","5":"1","6":"4","7":"3","8":"2","9":"1","_rn_":"6"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p><code>check.names = FALSE</code> menjaga nama kolom tetap seperti aslinya (misalnya <code>Kepedasan [Sampel 381]</code>). Tanpa itu, R akan mengubah spasi dan tanda kurung menjadi titik.</p>
+</section>
+<section id="langkah-2-cek-kualitas-data" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-2-cek-kualitas-data">Langkah 2 — Cek kualitas data</h2>
+<p>Setiap panelis harus memberi ranking 1, 2, 3, dan 4 masing-masing satu kali, sehingga jumlahnya selalu 1 + 2 + 3 + 4 = <strong>10</strong>.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>kolom_pedas <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"Kepedasan"</span>, <span class="fu">names</span>(sambal))</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">rowSums</span>(sambal[, kolom_pedas]))</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+10 
+40 </code></pre>
+</div>
+</div>
+<p>Semua 40 panelis memiliki jumlah 10 ✔️</p>
+</section>
+<section id="langkah-3-ubah-ke-format-panjang-long-format" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-3-ubah-ke-format-panjang-long-format">Langkah 3 — Ubah ke format panjang (<em>long format</em>)</h2>
+<p>Data ini berbentuk <strong>lebar</strong> (satu baris = satu panelis). Fungsi analisis membutuhkan bentuk <strong>panjang</strong> (satu baris = satu panelis × satu sampel).</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>pedas <span class="ot">&lt;-</span> sambal <span class="sc">%&gt;%</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"Kepedasan"</span>),</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"kode"</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">[Sampel (</span><span class="sc">\\</span><span class="st">d+)</span><span class="sc">\\</span><span class="st">]"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"rank"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">formula =</span> <span class="fu">recode</span>(kode, <span class="st">"381"</span> <span class="ot">=</span> <span class="st">"S10"</span>, <span class="st">"527"</span> <span class="ot">=</span> <span class="st">"S15"</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"649"</span> <span class="ot">=</span> <span class="st">"S20"</span>, <span class="st">"812"</span> <span class="ot">=</span> <span class="st">"S25"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">panelis =</span> <span class="st">`</span><span class="at">Kode Panelis</span><span class="st">`</span>, kode, formula, rank)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(pedas, <span class="dv">8</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["panelis"],"name":[1],"type":["chr"],"align":["left"]},{"label":["kode"],"name":[2],"type":["chr"],"align":["left"]},{"label":["formula"],"name":[3],"type":["chr"],"align":["left"]},{"label":["rank"],"name":[4],"type":["int"],"align":["right"]}],"data":[{"1":"K01","2":"381","3":"S10","4":"3"},{"1":"K01","2":"527","3":"S15","4":"2"},{"1":"K01","2":"649","3":"S20","4":"4"},{"1":"K01","2":"812","3":"S25","4":"1"},{"1":"K02","2":"381","3":"S10","4":"1"},{"1":"K02","2":"527","3":"S15","4":"4"},{"1":"K02","2":"649","3":"S20","4":"3"},{"1":"K02","2":"812","3":"S25","4":"2"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+</section>
+<section id="langkah-4-jumlah-ranking-rank-sum" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-4-jumlah-ranking-rank-sum">Langkah 4 — Jumlah ranking (<em>rank sum</em>)</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>pedas <span class="sc">%&gt;%</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(formula) <span class="sc">%&gt;%</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">jumlah_rank =</span> <span class="fu">sum</span>(rank),</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">rata_rank   =</span> <span class="fu">mean</span>(rank))</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":["formula"],"name":[1],"type":["chr"],"align":["left"]},{"label":["jumlah_rank"],"name":[2],"type":["int"],"align":["right"]},{"label":["rata_rank"],"name":[3],"type":["dbl"],"align":["right"]}],"data":[{"1":"S10","2":"65","3":"1.625"},{"1":"S15","2":"89","3":"2.225"},{"1":"S20","2":"122","3":"3.050"},{"1":"S25","2":"124","3":"3.100"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Semakin besar jumlah ranking, semakin pedas sampel tersebut menurut panelis.</p>
+</section>
+<section id="langkah-5-uji-friedman" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-5-uji-friedman">Langkah 5 — Uji Friedman</h2>
+<ul>
+<li>H₀: keempat formula memiliki kepedasan yang sama.</li>
+<li>H₁: setidaknya satu formula berbeda.</li>
+</ul>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu">friedman.test</span>(rank <span class="sc">~</span> formula <span class="sc">|</span> panelis, <span class="at">data =</span> pedas)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+    Friedman rank sum test
+
+data:  rank and formula and panelis
+Friedman chi-squared = 36.09, df = 3, p-value = 7.167e-08</code></pre>
+</div>
+</div>
+<p>Nilai p sangat kecil → <strong>ada perbedaan kepedasan</strong> di antara formula. Tetapi formula mana yang berbeda?</p>
+</section>
+<section id="langkah-6-uji-lanjut-dengan-agricolaefriedman" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-6-uji-lanjut-dengan-agricolaefriedman">Langkah 6 — Uji lanjut dengan <code>agricolae::friedman()</code></h2>
+<p>Fungsi <code>friedman()</code> dari paket <strong>agricolae</strong> melakukan uji Friedman <strong>dan</strong> uji lanjut sekaligus, lengkap dengan huruf notasi.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hasil_pedas <span class="ot">&lt;-</span> <span class="fu">with</span>(pedas,</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">friedman</span>(<span class="at">judge =</span> panelis, <span class="at">trt =</span> formula, <span class="at">evaluation =</span> rank,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>           <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">group =</span> <span class="cn">TRUE</span>, <span class="at">console =</span> <span class="cn">TRUE</span>))</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Study: rank ~ panelis + formula 
+
+formula,  Sum of the ranks
+
+    rank  r
+S10   65 40
+S15   89 40
+S20  122 40
+S25  124 40
+
+Friedman's Test
+===============
+Adjusted for ties
+Critical Value: 36.09
+P.Value Chisq: 7.167353e-08
+F Value: 16.77404
+P.Value F: 3.955083e-09 
+
+Post Hoc Analysis
+
+Alpha: 0.05 ; DF Error: 117
+t-Student: 1.980448
+LSD: 19.3663 
+
+Treatments with the same letter are not significantly different.
+
+    Sum of ranks groups
+S25          124      a
+S20          122      a
+S15           89      b
+S10           65      c</code></pre>
+</div>
+</div>
+<p>Bagian terpenting:</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>hasil_pedas<span class="sc">$</span>groups</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div data-pagedtable="false">
+  <script data-pagedtable-source="" type="application/json">
+{"columns":[{"label":[""],"name":["_rn_"],"type":[""],"align":["left"]},{"label":["Sum of ranks"],"name":[1],"type":["dbl"],"align":["right"]},{"label":["groups"],"name":[2],"type":["chr"],"align":["left"]}],"data":[{"1":"124","2":"a","_rn_":"S25"},{"1":"122","2":"a","_rn_":"S20"},{"1":"89","2":"b","_rn_":"S15"},{"1":"65","2":"c","_rn_":"S10"}],"options":{"columns":{"min":{},"max":[10]},"rows":{"min":[10],"max":[10]},"pages":{}}}
+  </script>
+</div>
+</div>
+</div>
+<p>Formula dengan <strong>huruf yang sama tidak berbeda nyata</strong>.</p>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Catatan</span>Catatan tentang LSD
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p><code>agricolae</code> memakai LSD berbasis distribusi <em>t</em> (metode Conover). Buku Meilgaard memakai LSD<sub>rank</sub> = 1,96 × √(<em>b·t·</em>(<em>t</em>+1)/6). Kedua cara biasanya memberi kesimpulan yang serupa. Coba bandingkan di Tantangan 2.4.</p>
+</div>
+</div>
+</section>
+<section id="langkah-7-visualisasi" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-7-visualisasi">Langkah 7 — Visualisasi</h2>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>grup <span class="ot">&lt;-</span> hasil_pedas<span class="sc">$</span>groups <span class="sc">%&gt;%</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  tibble<span class="sc">::</span><span class="fu">rownames_to_column</span>(<span class="st">"formula"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">jumlah_rank =</span> <span class="st">`</span><span class="at">Sum of ranks</span><span class="st">`</span>)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(grup, <span class="fu">aes</span>(<span class="at">x =</span> formula, <span class="at">y =</span> jumlah_rank)) <span class="sc">+</span></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"#d9480f"</span>, <span class="at">width =</span> <span class="fl">0.6</span>) <span class="sc">+</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(<span class="fu">aes</span>(<span class="at">label =</span> groups), <span class="at">vjust =</span> <span class="sc">-</span><span class="fl">0.5</span>, <span class="at">size =</span> <span class="dv">5</span>) <span class="sc">+</span></span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Formula (% cabai rawit)"</span>, <span class="at">y =</span> <span class="st">"Jumlah ranking kepedasan"</span>) <span class="sc">+</span></span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="dv">0</span>, <span class="fu">max</span>(grup<span class="sc">$</span>jumlah_rank) <span class="sc">*</span> <span class="fl">1.15</span>) <span class="sc">+</span></span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="02-ranking_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+<figcaption>Jumlah ranking kepedasan. Huruf berbeda = berbeda nyata (α = 0,05).</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretasi" class="level2">
+<h2 class="anchored" data-anchor-id="interpretasi">Interpretasi</h2>
+<ul>
+<li><strong>S10 &lt; S15 &lt; S20</strong>: setiap kenaikan cabai dari 10% → 15% → 20% dirasakan nyata lebih pedas.</li>
+<li><strong>S20 dan S25 tidak berbeda nyata</strong>: menambah cabai dari 20% ke 25% <strong>tidak</strong> membuat konsumen merasa lebih pedas.</li>
+</ul>
+<blockquote class="blockquote">
+<p><strong>Rekomendasi:</strong> gunakan tiga level — <em>Level 1</em> (S10), <em>Level 2</em> (S15), <em>Level 3</em> (S20). Formula S25 tidak perlu diproduksi karena lebih mahal tanpa tambahan kepedasan yang dirasakan.</p>
+</blockquote>
+<hr>
+</section>
+<section id="tantangan" class="level2">
+<h2 class="anchored" data-anchor-id="tantangan">Tantangan</h2>
+<section id="tantangan-2.1-aroma-bawang-goreng" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-2.1-aroma-bawang-goreng">Tantangan 2.1: Aroma bawang goreng</h3>
+<p>Pada lembar uji yang sama, panelis juga mengurutkan <strong>aroma bawang goreng</strong> (1 = paling lemah, 4 = paling kuat). Kolomnya diawali <code>Aroma bawang goreng</code>.</p>
+<ol type="a">
+<li>Cek kualitas datanya (Langkah 2).</li>
+<li>Lakukan uji Friedman dan uji lanjut dengan <code>agricolae</code>.</li>
+<li>Formula mana yang aromanya nyata paling lemah? Apa dugaan kalian tentang penyebabnya?</li>
+</ol>
+</section>
+<section id="tantangan-2.2-rekomendasi-akhir" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-2.2-rekomendasi-akhir">Tantangan 2.2: Rekomendasi akhir</h3>
+<p>Gabungkan hasil kepedasan (Langkah 6) dan aroma (Tantangan 2.1). Apakah rekomendasi “tiga level: S10, S15, S20” tetap masuk akal? Tulis rekomendasi untuk pemilik UMKM dalam <strong>maksimal 5 kalimat</strong>.</p>
+</section>
+<section id="tantangan-2.3-grafik-sebaran-ranking" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-2.3-grafik-sebaran-ranking">Tantangan 2.3: Grafik sebaran ranking</h3>
+<p>Jumlah ranking menyembunyikan informasi: dua sampel dengan jumlah ranking sama bisa memiliki pola jawaban berbeda. Buat <strong>grafik batang bertumpuk</strong> (<em>stacked bar</em>) yang menunjukkan berapa panelis yang memberi ranking 1, 2, 3, dan 4 untuk setiap formula (kepedasan).</p>
+<p><em>Petunjuk:</em> <code>count()</code> lalu <code>geom_col()</code>; ubah <code>rank</code> menjadi <code>factor</code> agar warnanya terpisah.</p>
+</section>
+<section id="tantangan-2.4-lsd-versi-buku" class="level3">
+<h3 class="anchored" data-anchor-id="tantangan-2.4-lsd-versi-buku">Tantangan 2.4: LSD versi buku</h3>
+<p>Hitung LSD<sub>rank</sub> versi Meilgaard (Persamaan 14.15): LSD<sub>rank</sub> = 1,96 × √(<em>b · t · (t + 1) / 6</em>), dengan <em>b</em> = jumlah panelis dan <em>t</em> = jumlah sampel.</p>
+<ol type="a">
+<li>Berapa nilainya untuk data kepedasan?</li>
+<li>Bandingkan dengan LSD dari <code>agricolae</code> (lihat <code>hasil_pedas$statistics</code>).</li>
+<li>Apakah kesimpulan pasangan formula yang berbeda nyata berubah?</li>
+</ol>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Disalin!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Disalin!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+      &nbsp;
+    </div>   
+    <div class="nav-footer-center">
+<p>Praktikum Evaluasi Sensori · Uji Perbedaan Atribut (Meilgaard dkk., Bab 8)</p>
+</div>
+    <div class="nav-footer-right">
+      &nbsp;
+    </div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
