@@ -196,7 +196,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Kasus 1 · Uji Tetrad</h1>
-<p class="subtitle lead">Mengurangi gula aren pada kopi susu — apakah kemanisannya berubah?</p>
+<p class="subtitle lead">Pengurangan formula gula aren pada kopi susu — apakah kemanisannya berubah?</p>
 </div>
 
 
@@ -217,15 +217,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h3 class="anchored" data-anchor-id="cerita-kasus">Cerita kasus</h3>
 <p>Kedai kopi <strong>“Kopi Lereng”</strong> di Yogyakarta ingin mengurangi gula pada menu andalannya, <em>es kopi susu gula aren</em>. Tim R&amp;D membuat dua formula baru:</p>
 <ul>
-<li><strong>F20</strong> — gula aren dikurangi 20%, kekurangannya diganti stevia.</li>
-<li><strong>F40</strong> — gula aren dikurangi 40%, kekurangannya diganti stevia.</li>
+<li><strong>F20</strong>: gula aren dikurangi 20%, kekurangannya diganti stevia.</li>
+<li><strong>F40</strong>: gula aren dikurangi 40%, kekurangannya diganti stevia.</li>
 </ul>
 <p>Pemilik kedai hanya punya satu syarat: <strong>pelanggan tidak boleh merasakan kopi menjadi kurang manis atau lebih manis</strong>. Atribut lain (aroma kopi, rasa susu) sudah dicek oleh tim R&amp;D dan dianggap setara.</p>
 <p><strong>Tujuan uji:</strong> menentukan apakah konsumen dapat membedakan kemanisan formula baru dengan formula asli.</p>
 </section>
 <section id="desain-uji" class="level2">
 <h2 class="anchored" data-anchor-id="desain-uji">Desain uji</h2>
-<p>Uji <strong>tetrad</strong> dipilih karena lebih sensitif daripada uji segitiga, padahal peluang menebaknya sama (1/3). Artinya, dengan jumlah panelis yang sama, tetrad lebih mampu menangkap perbedaan kecil.</p>
+<p>Uji <strong>tetrad</strong> (ini bukan <em>specified tetrad!</em>) dipilih karena lebih sensitif daripada uji segitiga, padahal peluang menebaknya sama (1/3). Artinya, dengan jumlah panelis yang sama, tetrad lebih mampu menangkap perbedaan kecil.</p>
 <ul>
 <li>Setiap panelis menerima <strong>4 gelas</strong>: 2 gelas formula asli (<strong>A</strong>) dan 2 gelas formula baru (<strong>B</strong>).</li>
 <li>Ada <strong>6 kemungkinan urutan penyajian</strong>: AABB, ABAB, ABBA, BAAB, BABA, BBAA. Masing-masing dipakai sama banyak dan dibagikan secara acak.</li>
@@ -262,6 +262,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 <p>Arti kolom:</p>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 37%">
+<col style="width: 62%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Kolom</th>
@@ -407,7 +411,7 @@ Alternative hypothesis: d-prime is greater than 0 </code></pre>
 </section>
 <section id="langkah-5-apakah-f20-boleh-disebut-sama-manis" class="level2">
 <h2 class="anchored" data-anchor-id="langkah-5-apakah-f20-boleh-disebut-sama-manis">Langkah 5 — Apakah F20 boleh disebut “sama manis”?</h2>
-<p>Hati-hati! <strong>Tidak signifikan bukan berarti sama.</strong> Bisa jadi panelis kita terlalu sedikit untuk mendeteksi perbedaan. Untuk menyatakan “sama”, kita harus melakukan <strong>uji kemiripan</strong>.</p>
+<p>Hati-hati! <strong>Tidak signifikan bukan berarti sama.</strong> Bisa jadi panelis kita terlalu sedikit jumlahnya untuk mendeteksi perbedaan. Untuk menyatakan “sama”, kita harus melakukan <strong>uji kemiripan</strong> (similarity test).</p>
 <p>Sebelum uji dilakukan, pemilik kedai menetapkan batas: <em>“Saya bisa terima kalau <strong>paling banyak 20%</strong> pelanggan bisa membedakan.”</em> Jadi <strong>pd₀ = 0,20</strong>.</p>
 <ul>
 <li>H₀: pd ≥ 0,20 (perbedaannya terlalu besar)</li>
@@ -444,7 +448,7 @@ Alternative hypothesis: pd is less than 0.2 </code></pre>
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Uji perbedaan <strong>tidak signifikan</strong>, tetapi uji kemiripan juga <strong>tidak signifikan</strong>. Hasilnya <strong>belum meyakinkan</strong> — bukan “sama”, bukan juga “berbeda”. Penyebab utamanya: jumlah panelis kurang.</p>
+<p>Uji perbedaan <strong>tidak signifikan</strong>, tetapi uji kemiripan juga <strong>tidak signifikan</strong>. Hasilnya <strong>belum meyakinkan</strong>, artinya bukan “sama”, bukan juga “berbeda”. Penyebab utamanya: jumlah panelis kurang.</p>
 </div>
 </div>
 </section>
@@ -477,12 +481,68 @@ Alternative hypothesis: pd is less than 0.2 </code></pre>
 <li>Apa kesimpulan kalian untuk pemilik kedai?</li>
 <li>Bandingkan d′ dari F20 dan F40. Apakah urutannya masuk akal secara formulasi?</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>f40 <span class="ot">&lt;-</span> kopi <span class="sc">%&gt;%</span> <span class="fu">filter</span>(formula <span class="sc">==</span> <span class="st">"F40"</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(f40<span class="sc">$</span>urutan)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>benar40 <span class="ot">&lt;-</span> <span class="fu">sum</span>(f40<span class="sc">$</span>benar)</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>total40 <span class="ot">&lt;-</span> <span class="fu">nrow</span>(f40)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">benar =</span> benar40, <span class="at">total =</span> total40)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>hasil_f40 <span class="ot">&lt;-</span> <span class="fu">discrim</span>(benar40, total40, <span class="at">method =</span> <span class="st">"tetrad"</span>)</span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>hasil_f40</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># opsional: bandingkan dalam satu tabel</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">rbind</span>(<span class="at">F20 =</span> <span class="fu">coef</span>(<span class="fu">discrim</span>(<span class="dv">21</span>, <span class="dv">48</span>, <span class="at">method =</span> <span class="st">"tetrad"</span>))[<span class="st">"d-prime"</span>, ],</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>      <span class="at">F40 =</span> <span class="fu">coef</span>(hasil_f40)[<span class="st">"d-prime"</span>, ])</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-1.2-berapa-panelis-yang-dibutuhkan" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-1.2-berapa-panelis-yang-dibutuhkan">Tantangan 1.2: Berapa panelis yang dibutuhkan?</h3>
 <p>Pemilik kedai ingin mengulang uji kemiripan untuk F20 dengan pd₀ = 0,20, α = 0,05, dan <em>power</em> 80%, dengan asumsi bahwa sebenarnya <strong>tidak ada</strong> perbedaan (pd = 0).</p>
 <p>Berapa panelis yang dibutuhkan?</p>
 <p><em>Petunjuk:</em> cari fungsi di sensR yang namanya berakhiran <code>SS</code> (<em>sample size</em>). Ingat bahwa peluang menebak pada tetrad adalah 1/3.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discrimSS</span>(<span class="at">pdA =</span> <span class="dv">0</span>, <span class="at">pd0 =</span> <span class="fl">0.20</span>, <span class="at">target.power =</span> <span class="fl">0.80</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>,</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>          <span class="at">pGuess =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">3</span>, <span class="at">test =</span> <span class="st">"similarity"</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cara alternatif lewat skala d'</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>d0 <span class="ot">&lt;-</span> <span class="fu">rescale</span>(<span class="at">pd =</span> <span class="fl">0.2</span>, <span class="at">method =</span> <span class="st">"tetrad"</span>)<span class="sc">$</span>coefficients<span class="sc">$</span>d.prime</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>d0</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="fu">d.primeSS</span>(<span class="at">d.primeA =</span> <span class="dv">0</span>, <span class="at">d.prime0 =</span> d0, <span class="at">target.power =</span> <span class="fl">0.80</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>          <span class="at">method =</span> <span class="st">"tetrad"</span>, <span class="at">test =</span> <span class="st">"similarity"</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-1.3-mengapa-tetrad-bukan-segitiga" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-1.3-mengapa-tetrad-bukan-segitiga">Tantangan 1.3: Mengapa tetrad, bukan segitiga?</h3>
@@ -492,6 +552,30 @@ Alternative hypothesis: pd is less than 0.2 </code></pre>
 <li>Jelaskan dalam 2–3 kalimat mengapa tetrad lebih efisien, padahal peluang menebaknya sama (1/3).</li>
 </ol>
 <p><em>Petunjuk:</em> lihat <code>?d.primeSS</code> dan <code>?psyfun</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>n_tetrad   <span class="ot">&lt;-</span> <span class="fu">d.primeSS</span>(<span class="at">d.primeA =</span> <span class="dv">1</span>, <span class="at">target.power =</span> <span class="fl">0.80</span>, <span class="at">method =</span> <span class="st">"tetrad"</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>n_segitiga <span class="ot">&lt;-</span> <span class="fu">d.primeSS</span>(<span class="at">d.primeA =</span> <span class="dv">1</span>, <span class="at">target.power =</span> <span class="fl">0.80</span>, <span class="at">method =</span> <span class="st">"triangle"</span>)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="at">tetrad =</span> n_tetrad, <span class="at">segitiga =</span> n_segitiga)</span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>d_f40 <span class="ot">&lt;-</span> <span class="fu">coef</span>(hasil_f40)[<span class="st">"d-prime"</span>, <span class="st">"Estimate"</span>]</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a><span class="fu">psyfun</span>(d_f40, <span class="at">method =</span> <span class="st">"tetrad"</span>)    <span class="co"># pc teramati di tetrad</span></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="fu">psyfun</span>(d_f40, <span class="at">method =</span> <span class="st">"triangle"</span>)  <span class="co"># pc yang diharapkan di segitiga</span></span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-1.4-versi-specified-tetrad-dari-buku" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-1.4-versi-specified-tetrad-dari-buku">Tantangan 1.4: Versi <em>specified tetrad</em> dari buku</h3>
@@ -507,6 +591,26 @@ Alternative hypothesis: pd is less than 0.2 </code></pre>
 <li>Uji dengan fungsi R yang sesuai. Apakah F40 nyata kurang manis?</li>
 <li>Berapa jumlah minimum jawaban yang dibutuhkan agar signifikan pada α = 0,05 untuk 48 panelis?</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-6-contents" aria-controls="callout-6" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-6" class="callout-6-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="fu">choose</span>(<span class="dv">4</span>, <span class="dv">2</span>)</span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a><span class="fu">binom.test</span>(<span class="at">x =</span> <span class="dv">15</span>, <span class="at">n =</span> <span class="dv">48</span>, <span class="at">p =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a><span class="fu">findcr</span>(<span class="at">sample.size =</span> <span class="dv">48</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">p0 =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -586,7 +690,7 @@ Alternative hypothesis: pd is less than 0.2 </code></pre>
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/andikawicaks\.github\.io\/uji-sensoris-tphp-TPHP262504\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

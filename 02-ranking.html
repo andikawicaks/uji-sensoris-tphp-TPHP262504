@@ -175,7 +175,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#langkah-3-ubah-ke-format-panjang-long-format" id="toc-langkah-3-ubah-ke-format-panjang-long-format" class="nav-link" data-scroll-target="#langkah-3-ubah-ke-format-panjang-long-format">Langkah 3 — Ubah ke format panjang (<em>long format</em>)</a></li>
   <li><a href="#langkah-4-jumlah-ranking-rank-sum" id="toc-langkah-4-jumlah-ranking-rank-sum" class="nav-link" data-scroll-target="#langkah-4-jumlah-ranking-rank-sum">Langkah 4 — Jumlah ranking (<em>rank sum</em>)</a></li>
   <li><a href="#langkah-5-uji-friedman" id="toc-langkah-5-uji-friedman" class="nav-link" data-scroll-target="#langkah-5-uji-friedman">Langkah 5 — Uji Friedman</a></li>
-  <li><a href="#langkah-6-uji-lanjut-dengan-agricolaefriedman" id="toc-langkah-6-uji-lanjut-dengan-agricolaefriedman" class="nav-link" data-scroll-target="#langkah-6-uji-lanjut-dengan-agricolaefriedman">Langkah 6 — Uji lanjut dengan <code>agricolae::friedman()</code></a></li>
+  <li><a href="#langkah-6-uji-lanjut-dengan-friedman" id="toc-langkah-6-uji-lanjut-dengan-friedman" class="nav-link" data-scroll-target="#langkah-6-uji-lanjut-dengan-friedman">Langkah 6 — Uji lanjut dengan <code>friedman()</code></a></li>
   <li><a href="#langkah-7-visualisasi" id="toc-langkah-7-visualisasi" class="nav-link" data-scroll-target="#langkah-7-visualisasi">Langkah 7 — Visualisasi</a></li>
   <li><a href="#interpretasi" id="toc-interpretasi" class="nav-link" data-scroll-target="#interpretasi">Interpretasi</a></li>
   <li><a href="#tantangan" id="toc-tantangan" class="nav-link" data-scroll-target="#tantangan">Tantangan</a>
@@ -344,9 +344,9 @@ Friedman chi-squared = 36.09, df = 3, p-value = 7.167e-08</code></pre>
 </div>
 <p>Nilai p sangat kecil → <strong>ada perbedaan kepedasan</strong> di antara formula. Tetapi formula mana yang berbeda?</p>
 </section>
-<section id="langkah-6-uji-lanjut-dengan-agricolaefriedman" class="level2">
-<h2 class="anchored" data-anchor-id="langkah-6-uji-lanjut-dengan-agricolaefriedman">Langkah 6 — Uji lanjut dengan <code>agricolae::friedman()</code></h2>
-<p>Fungsi <code>friedman()</code> dari paket <strong>agricolae</strong> melakukan uji Friedman <strong>dan</strong> uji lanjut sekaligus, lengkap dengan huruf notasi.</p>
+<section id="langkah-6-uji-lanjut-dengan-friedman" class="level2">
+<h2 class="anchored" data-anchor-id="langkah-6-uji-lanjut-dengan-friedman">Langkah 6 — Uji lanjut dengan <code>friedman()</code></h2>
+<p>Fungsi <code>friedman()</code> dari library <strong>agricolae</strong> melakukan uji Friedman <strong>dan</strong> uji lanjut sekaligus, lengkap dengan huruf notasi.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>hasil_pedas <span class="ot">&lt;-</span> <span class="fu">with</span>(pedas,</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">friedman</span>(<span class="at">judge =</span> panelis, <span class="at">trt =</span> formula, <span class="at">evaluation =</span> rank,</span>
@@ -442,7 +442,7 @@ S10           65      c</code></pre>
 <li><strong>S20 dan S25 tidak berbeda nyata</strong>: menambah cabai dari 20% ke 25% <strong>tidak</strong> membuat konsumen merasa lebih pedas.</li>
 </ul>
 <blockquote class="blockquote">
-<p><strong>Rekomendasi:</strong> gunakan tiga level — <em>Level 1</em> (S10), <em>Level 2</em> (S15), <em>Level 3</em> (S20). Formula S25 tidak perlu diproduksi karena lebih mahal tanpa tambahan kepedasan yang dirasakan.</p>
+<p><strong>Rekomendasi:</strong> gunakan tiga buah level, yaitu <em>Level 1</em> (S10), <em>Level 2</em> (S15), <em>Level 3</em> (S20). Formula S25 tidak perlu diproduksi karena lebih mahal tanpa tambahan kepedasan yang dapat dirasakan panelis.</p>
 </blockquote>
 <hr>
 </section>
@@ -453,9 +453,41 @@ S10           65      c</code></pre>
 <p>Pada lembar uji yang sama, panelis juga mengurutkan <strong>aroma bawang goreng</strong> (1 = paling lemah, 4 = paling kuat). Kolomnya diawali <code>Aroma bawang goreng</code>.</p>
 <ol type="a">
 <li>Cek kualitas datanya (Langkah 2).</li>
-<li>Lakukan uji Friedman dan uji lanjut dengan <code>agricolae</code>.</li>
+<li>Lakukan uji Friedman dan uji lanjut dengan <code>friedman</code>.</li>
 <li>Formula mana yang aromanya nyata paling lemah? Apa dugaan kalian tentang penyebabnya?</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>kolom_aroma <span class="ot">&lt;-</span> <span class="fu">grep</span>(<span class="st">"Aroma"</span>, <span class="fu">names</span>(sambal))</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">table</span>(<span class="fu">rowSums</span>(sambal[, kolom_aroma]))</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>aroma <span class="ot">&lt;-</span> sambal <span class="sc">%&gt;%</span></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"Aroma"</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"kode"</span>,</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">[Sampel (</span><span class="sc">\\</span><span class="st">d+)</span><span class="sc">\\</span><span class="st">]"</span>,</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"rank"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">formula =</span> <span class="fu">recode</span>(kode, <span class="st">"381"</span> <span class="ot">=</span> <span class="st">"S10"</span>, <span class="st">"527"</span> <span class="ot">=</span> <span class="st">"S15"</span>,</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"649"</span> <span class="ot">=</span> <span class="st">"S20"</span>, <span class="st">"812"</span> <span class="ot">=</span> <span class="st">"S25"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">panelis =</span> <span class="st">`</span><span class="at">Kode Panelis</span><span class="st">`</span>, formula, rank)</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a><span class="fu">friedman.test</span>(rank <span class="sc">~</span> formula <span class="sc">|</span> panelis, <span class="at">data =</span> aroma)</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>hasil_aroma <span class="ot">&lt;-</span> <span class="fu">with</span>(aroma, <span class="fu">friedman</span>(panelis, formula, rank, <span class="at">group =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>hasil_aroma<span class="sc">$</span>groups</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-2.2-rekomendasi-akhir" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-2.2-rekomendasi-akhir">Tantangan 2.2: Rekomendasi akhir</h3>
@@ -465,6 +497,46 @@ S10           65      c</code></pre>
 <h3 class="anchored" data-anchor-id="tantangan-2.3-grafik-sebaran-ranking">Tantangan 2.3: Grafik sebaran ranking</h3>
 <p>Jumlah ranking menyembunyikan informasi: dua sampel dengan jumlah ranking sama bisa memiliki pola jawaban berbeda. Buat <strong>grafik batang bertumpuk</strong> (<em>stacked bar</em>) yang menunjukkan berapa panelis yang memberi ranking 1, 2, 3, dan 4 untuk setiap formula (kepedasan).</p>
 <p><em>Petunjuk:</em> <code>count()</code> lalu <code>geom_col()</code>; ubah <code>rank</code> menjadi <code>factor</code> agar warnanya terpisah.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>pedas <span class="ot">&lt;-</span> sambal <span class="sc">%&gt;%</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(<span class="at">cols =</span> <span class="fu">starts_with</span>(<span class="st">"Kepedasan"</span>),</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_to =</span> <span class="st">"kode"</span>,</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>               <span class="at">names_pattern =</span> <span class="st">"</span><span class="sc">\\</span><span class="st">[Sampel (</span><span class="sc">\\</span><span class="st">d+)</span><span class="sc">\\</span><span class="st">]"</span>,</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">values_to =</span> <span class="st">"rank"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">formula =</span> <span class="fu">recode</span>(kode, <span class="st">"381"</span> <span class="ot">=</span> <span class="st">"S10"</span>, <span class="st">"527"</span> <span class="ot">=</span> <span class="st">"S15"</span>,</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>                                <span class="st">"649"</span> <span class="ot">=</span> <span class="st">"S20"</span>, <span class="st">"812"</span> <span class="ot">=</span> <span class="st">"S25"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="at">panelis =</span> <span class="st">`</span><span class="at">Kode Panelis</span><span class="st">`</span>, formula, rank)</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>pedas <span class="sc">%&gt;%</span></span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">count</span>(formula, rank) <span class="sc">%&gt;%</span></span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> formula, <span class="at">y =</span> n, <span class="at">fill =</span> <span class="fu">factor</span>(rank))) <span class="sc">+</span></span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_brewer</span>(<span class="at">palette =</span> <span class="st">"OrRd"</span>, <span class="at">name =</span> <span class="st">"Ranking</span><span class="sc">\n</span><span class="st">(4 = paling pedas)"</span>) <span class="sc">+</span></span>
+<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="st">"Formula"</span>, <span class="at">y =</span> <span class="st">"Jumlah panelis"</span>) <span class="sc">+</span></span>
+<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>(<span class="at">base_size =</span> <span class="dv">13</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="02-ranking_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-2.4-lsd-versi-buku" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-2.4-lsd-versi-buku">Tantangan 2.4: LSD versi buku</h3>
@@ -474,6 +546,30 @@ S10           65      c</code></pre>
 <li>Bandingkan dengan LSD dari <code>agricolae</code> (lihat <code>hasil_pedas$statistics</code>).</li>
 <li>Apakah kesimpulan pasangan formula yang berbeda nyata berubah?</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>b <span class="ot">&lt;-</span> <span class="dv">40</span>; t <span class="ot">&lt;-</span> <span class="dv">4</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>lsd_buku <span class="ot">&lt;-</span> <span class="fl">1.96</span> <span class="sc">*</span> <span class="fu">sqrt</span>(b <span class="sc">*</span> t <span class="sc">*</span> (t <span class="sc">+</span> <span class="dv">1</span>) <span class="sc">/</span> <span class="dv">6</span>)</span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>lsd_buku</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>hasil_pedas <span class="ot">&lt;-</span> <span class="fu">with</span>(pedas, <span class="fu">friedman</span>(panelis, formula, rank, <span class="at">group =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>hasil_pedas<span class="sc">$</span>statistics</span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>hasil_pedas<span class="sc">$</span>groups</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -553,7 +649,7 @@ S10           65      c</code></pre>
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/andikawicaks\.github\.io\/uji-sensoris-tphp-TPHP262504\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

@@ -173,7 +173,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#berapa-peluang-menebak" id="toc-berapa-peluang-menebak" class="nav-link" data-scroll-target="#berapa-peluang-menebak">Berapa peluang menebak?</a></li>
   </ul></li>
-  <li><a href="#satu-sisi-atau-dua-sisi" id="toc-satu-sisi-atau-dua-sisi" class="nav-link" data-scroll-target="#satu-sisi-atau-dua-sisi">Satu sisi atau dua sisi?</a></li>
+  <li><a href="#one-sided-atau-two-sided" id="toc-one-sided-atau-two-sided" class="nav-link" data-scroll-target="#one-sided-atau-two-sided"><em>One-sided</em> atau <em>two-sided</em>?</a></li>
   <li><a href="#langkah-1-membaca-data" id="toc-langkah-1-membaca-data" class="nav-link" data-scroll-target="#langkah-1-membaca-data">Langkah 1 — Membaca data</a></li>
   <li><a href="#langkah-2-hitung-jenis-pilihan" id="toc-langkah-2-hitung-jenis-pilihan" class="nav-link" data-scroll-target="#langkah-2-hitung-jenis-pilihan">Langkah 2 — Hitung jenis pilihan</a></li>
   <li><a href="#langkah-3-nilai-kritis-dengan-findcr" id="toc-langkah-3-nilai-kritis-dengan-findcr" class="nav-link" data-scroll-target="#langkah-3-nilai-kritis-dengan-findcr">Langkah 3 — Nilai kritis dengan <code>findcr()</code></a></li>
@@ -222,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="desain-uji" class="level2">
 <h2 class="anchored" data-anchor-id="desain-uji">Desain uji</h2>
-<p>Kasus ini mengikuti <strong>Contoh 8.3</strong> di Meilgaard dkk. (Bagian 8.3).</p>
+<p>Kasus ini mengikuti <strong>Contoh 8.3</strong> di Meilgaard dkk.</p>
 <ul>
 <li>Setiap panelis menerima <strong>4 gelas</strong>: 2 gelas dengan gula pemasok <strong>lama</strong> (A) dan 2 gelas dengan gula pemasok <strong>baru</strong> (B).</li>
 <li>Ada <strong>6 urutan penyajian</strong> (AABB, ABAB, ABBA, BAAB, BABA, BBAA), masing-masing dipakai sama banyak.</li>
@@ -280,10 +280,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="satu-sisi-atau-dua-sisi" class="level2">
-<h2 class="anchored" data-anchor-id="satu-sisi-atau-dua-sisi">Satu sisi atau dua sisi?</h2>
-<p>Perusahaan tidak ingin kemanisan berubah <strong>ke arah mana pun</strong>. Jadi ada dua kemungkinan kegagalan: gula lama lebih manis, <strong>atau</strong> gula baru lebih manis. Ini adalah uji <strong>dua sisi</strong>.</p>
-<p>Cara mengujinya:</p>
+<section id="one-sided-atau-two-sided" class="level2">
+<h2 class="anchored" data-anchor-id="one-sided-atau-two-sided"><em>One-sided</em> atau <em>two-sided</em>?</h2>
+<p>Perusahaan tidak ingin kemanisan berubah <strong>ke arah mana pun</strong>. Jadi ada dua kemungkinan kegagalan: gula lama lebih manis, <strong>atau</strong> gula baru lebih manis. Makanya tes ini menggunakan uji <em>two-sided</em>.</p>
 <ol type="1">
 <li>Hitung jumlah panelis yang memilih <strong>lama-lama</strong> dan yang memilih <strong>baru-baru</strong>.</li>
 <li>Uji <strong>masing-masing arah</strong> dengan uji binomial <strong>satu sisi</strong> (peluang tebakan 1/6), memakai <strong>α/2 = 0,025</strong>. Risiko total untuk kedua arah tetap α = 0,05.</li>
@@ -380,7 +379,7 @@ baru-baru lama-baru lama-lama
 </section>
 <section id="langkah-3-nilai-kritis-dengan-findcr" class="level2">
 <h2 class="anchored" data-anchor-id="langkah-3-nilai-kritis-dengan-findcr">Langkah 3 — Nilai kritis dengan <code>findcr()</code></h2>
-<p>Fungsi <code>findcr()</code> dari paket <strong>sensR</strong> memberi <strong>jumlah minimum</strong> jawaban agar hasilnya signifikan. Karena uji dua sisi, kita pakai α/2 = 0,025 untuk setiap arah.</p>
+<p>Fungsi <code>findcr()</code> dari library <strong>sensR</strong> memberi <strong>jumlah minimum</strong> jawaban agar hasilnya signifikan. Karena uji two-sided, kita pakai α/2 = 0,025 untuk setiap arah.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>kritis <span class="ot">&lt;-</span> <span class="fu">findcr</span>(<span class="at">sample.size =</span> n_total, <span class="at">alpha =</span> <span class="fl">0.05</span> <span class="sc">/</span> <span class="dv">2</span>, <span class="at">p0 =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span>
 <span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>kritis</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
@@ -396,7 +395,6 @@ baru-baru lama-baru lama-lama
 </section>
 <section id="langkah-4-nilai-p-dengan-binom.test" class="level2">
 <h2 class="anchored" data-anchor-id="langkah-4-nilai-p-dengan-binom.test">Langkah 4 — Nilai p dengan <code>binom.test()</code></h2>
-<p>Nilai kritis sudah cukup untuk mengambil keputusan, tetapi laporan ilmiah biasanya mencantumkan nilai p.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>uji_lama <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(n_lamalama, n_total, <span class="at">p =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>uji_baru <span class="ot">&lt;-</span> <span class="fu">binom.test</span>(n_barubaru, n_total, <span class="at">p =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span>
@@ -465,6 +463,35 @@ baru-baru lama-baru lama-lama
 <li>Buat satu tabel ringkasan berisi: produk, jumlah lama-lama, jumlah baru-baru, nilai kritis, nilai p untuk setiap arah, dan kesimpulan.</li>
 <li>Untuk produk mana saja pemasok baru <strong>boleh</strong> dipakai? Hati-hati dengan kata “boleh”: apakah hasil tidak signifikan cukup untuk menyatakan kemanisannya <strong>sama</strong>? (Ingat Kasus 1.)</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-2-contents" aria-controls="callout-2" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-2" class="callout-2-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>ringkas <span class="ot">&lt;-</span> gula <span class="sc">%&gt;%</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(produk) <span class="sc">%&gt;%</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>            <span class="at">lama_lama =</span> <span class="fu">sum</span>(jenis_pilihan <span class="sc">==</span> <span class="st">"lama-lama"</span>),</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>            <span class="at">baru_baru =</span> <span class="fu">sum</span>(jenis_pilihan <span class="sc">==</span> <span class="st">"baru-baru"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">kritis =</span> <span class="fu">sapply</span>(n, findcr, <span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">p0 =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>),</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>         <span class="at">p_lama =</span> <span class="fu">mapply</span>(<span class="cf">function</span>(x, n) <span class="fu">binom.test</span>(x, n, <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)<span class="sc">$</span>p.value,</span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>                         lama_lama, n),</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>         <span class="at">p_baru =</span> <span class="fu">mapply</span>(<span class="cf">function</span>(x, n) <span class="fu">binom.test</span>(x, n, <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)<span class="sc">$</span>p.value,</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a>                         baru_baru, n),</span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>         <span class="at">kesimpulan =</span> <span class="fu">ifelse</span>(<span class="fu">pmin</span>(p_lama, p_baru) <span class="sc">&lt;</span> <span class="fl">0.025</span>, <span class="st">"berbeda"</span>, <span class="st">"tidak terbukti berbeda"</span>))</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>ringkas</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-1b.2-kasus-satu-sisi" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-1b.2-kasus-satu-sisi">Tantangan 1b.2: Kasus satu sisi</h3>
@@ -475,6 +502,25 @@ baru-baru lama-baru lama-lama
 <li>Berapa nilai kritisnya? Berapa nilai p-nya?</li>
 <li>Apa kesimpulannya?</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-3-contents" aria-controls="callout-3" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-3" class="callout-3-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="fu">findcr</span>(<span class="at">sample.size =</span> <span class="dv">36</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>, <span class="at">p0 =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="fu">binom.test</span>(<span class="dv">13</span>, <span class="dv">36</span>, <span class="at">p =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>, <span class="at">alternative =</span> <span class="st">"greater"</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-1b.3-merencanakan-jumlah-panelis" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-1b.3-merencanakan-jumlah-panelis">Tantangan 1b.3: Merencanakan jumlah panelis</h3>
@@ -484,6 +530,25 @@ baru-baru lama-baru lama-lama
 <li>Berapa panelis yang dibutuhkan untuk mencapai <em>power</em> 80%?</li>
 </ol>
 <p><em>Petunjuk:</em> fungsi sensR yang namanya diawali <code>discrim</code> dan diakhiri <code>Pwr</code> atau <code>SS</code>. Jangan lupa <code>pGuess = 1/6</code>.</p>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-4-contents" aria-controls="callout-4" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-4" class="callout-4-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">discrimPwr</span>(<span class="at">pdA =</span> <span class="fl">0.25</span>, <span class="at">sample.size =</span> <span class="dv">30</span>, <span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">pGuess =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a><span class="fu">discrimSS</span>(<span class="at">pdA =</span> <span class="fl">0.25</span>, <span class="at">target.power =</span> <span class="fl">0.80</span>, <span class="at">alpha =</span> <span class="fl">0.025</span>, <span class="at">pGuess =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 </section>
 <section id="tantangan-1b.4-cek-contoh-8.3-di-buku" class="level3">
 <h3 class="anchored" data-anchor-id="tantangan-1b.4-cek-contoh-8.3-di-buku">Tantangan 1b.4: Cek Contoh 8.3 di buku</h3>
@@ -519,6 +584,25 @@ baru-baru lama-baru lama-lama
 <li>Buku menyebut nilai kritisnya <strong>8</strong>. Apakah hasil kalian sama? Jika berbeda, coba <code>alpha = 0.05</code> (tanpa dibagi dua). Diskusikan kemungkinan penyebab perbedaannya.</li>
 <li>Apakah kesimpulan buku (tidak ada perbedaan kemanisan) berubah?</li>
 </ol>
+<div class="callout callout-style-default callout-tip callout-titled">
+<div class="callout-header d-flex align-content-center collapsed" data-bs-toggle="collapse" data-bs-target=".callout-5-contents" aria-controls="callout-5" aria-expanded="false" aria-label="Toggle callout">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+<span class="screen-reader-only">Tip</span>Lihat jawaban
+</div>
+<div class="callout-btn-toggle d-inline-block border-0 py-1 ps-1 pe-0 float-end"><i class="callout-toggle"></i></div>
+</div>
+<div id="callout-5" class="callout-5-contents callout-collapse collapse">
+<div class="callout-body-container callout-body">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="fu">findcr</span>(<span class="at">sample.size =</span> <span class="dv">24</span>, <span class="at">alpha =</span> <span class="fl">0.05</span> <span class="sc">/</span> <span class="dv">2</span>, <span class="at">p0 =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)  <span class="co"># dua sisi: alpha/2 per arah</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a><span class="fu">findcr</span>(<span class="at">sample.size =</span> <span class="dv">24</span>, <span class="at">alpha =</span> <span class="fl">0.05</span>,     <span class="at">p0 =</span> <span class="dv">1</span><span class="sc">/</span><span class="dv">6</span>)  <span class="co"># alpha penuh per arah</span></span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -598,7 +682,7 @@ baru-baru lama-baru lama-lama
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/andikawicaks\.github\.io\/uji-sensoris-tphp-TPHP262504\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }

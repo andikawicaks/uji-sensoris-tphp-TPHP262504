@@ -168,7 +168,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">Isi halaman</h2>
    
   <ul>
-  <li><a href="#tentang-praktikum-ini" id="toc-tentang-praktikum-ini" class="nav-link active" data-scroll-target="#tentang-praktikum-ini">Tentang praktikum ini</a></li>
+  <li><a href="#tentang-modul-ini" id="toc-tentang-modul-ini" class="nav-link active" data-scroll-target="#tentang-modul-ini">Tentang modul ini</a></li>
   <li><a href="#persiapan" id="toc-persiapan" class="nav-link" data-scroll-target="#persiapan">Persiapan</a>
   <ul class="collapse">
   <li><a href="#instal-paket-cukup-sekali" id="toc-instal-paket-cukup-sekali" class="nav-link" data-scroll-target="#instal-paket-cukup-sekali">1. Instal paket (cukup sekali)</a></li>
@@ -185,7 +185,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
 <h1 class="title">Uji Perbedaan Atribut: Studi Kasus dengan R</h1>
-<p class="subtitle lead">Praktikum Evaluasi Sensori — berdasarkan Meilgaard, Civille &amp; Carr, <em>Sensory Evaluation Techniques</em>, Bab 8</p>
+<p class="subtitle lead">Kelas Uji Sensori S1 TPHP — based on Meilgaard, Civille &amp; Carr, <em>Sensory Evaluation Techniques</em>, Bab 8</p>
 </div>
 
 
@@ -202,15 +202,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<section id="tentang-praktikum-ini" class="level2">
-<h2 class="anchored" data-anchor-id="tentang-praktikum-ini">Tentang praktikum ini</h2>
-<p>Uji perbedaan atribut (<em>attribute difference test</em>) menjawab pertanyaan: <strong>“Bagaimana atribut X berbeda di antara sampel-sampel ini?”</strong> Berbeda dengan uji perbedaan keseluruhan (misalnya uji segitiga), di sini panelis hanya memperhatikan <strong>satu atribut</strong> — misalnya kemanisan, kepedasan, atau kerenyahan.</p>
-<p>Di praktikum ini kalian akan mengerjakan empat studi kasus. Setiap kasus berisi:</p>
+<section id="tentang-modul-ini" class="level2">
+<h2 class="anchored" data-anchor-id="tentang-modul-ini">Tentang modul ini</h2>
+<p>Uji perbedaan atribut (<em>attribute difference test</em>) menjawab pertanyaan: <strong>“Bagaimana atribut X berbeda di antara sampel-sampel ini?”</strong> Berbeda dengan uji perbedaan keseluruhan (misalnya uji segitiga), di sini panelis hanya memperhatikan <strong>satu atribut</strong>, misalnya kemanisan, kepedasan, atau kerenyahan.</p>
+<p>Di studi kasus ini kalian akan mengerjakan empat studi kasus. Setiap kasus berisi:</p>
 <ol type="1">
 <li><strong>Cerita masalah</strong> dari industri pangan.</li>
 <li><strong>Data</strong> (file CSV) yang bisa diunduh.</li>
 <li><strong>Analisis terpandu</strong> dengan skrip R yang siap dijalankan.</li>
-<li><strong>Tantangan</strong> — soal tanpa skrip. Kalian harus menulis skrip sendiri (pendek saja!) dengan memodifikasi skrip yang sudah ada.</li>
+<li><strong>Challenges</strong> berupa soal tanpa skrip. Kalian harus menulis skrip sendiri dengan memodifikasi skrip yang sudah ada.</li>
 </ol>
 <table class="caption-top table">
 <thead>
@@ -257,15 +257,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="fu">c</span>(<span class="st">"sensR"</span>, <span class="st">"agricolae"</span>, <span class="st">"dplyr"</span>, <span class="st">"tidyr"</span>, <span class="st">"ggplot2"</span>))</span></code></pre></div><button title="Salin ke Papan Klip" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 <ul>
-<li><strong>sensR</strong> — paket khusus uji diskriminasi sensori (tetrad, segitiga, duo-trio, 2-AFC, dll.).</li>
-<li><strong>agricolae</strong> — berisi fungsi <code>friedman()</code> yang langsung memberi uji lanjut dan huruf notasi.</li>
-<li><strong>dplyr, tidyr, ggplot2</strong> — untuk merapikan data dan membuat grafik.</li>
+<li><strong>sensR</strong> adalah paket khusus uji diskriminasi sensori (tetrad, segitiga, duo-trio, 2-AFC, dll.).</li>
+<li><strong>agricolae</strong> berisi fungsi <code>friedman()</code> yang langsung memberi uji lanjut dan huruf notasi.</li>
+<li><strong>dplyr, tidyr, ggplot2</strong> untuk merapikan data dan membuat grafik.</li>
 </ul>
 </section>
 <section id="siapkan-folder-kerja" class="level3">
 <h3 class="anchored" data-anchor-id="siapkan-folder-kerja">2. Siapkan folder kerja</h3>
 <ol type="1">
-<li>Buat <strong>RStudio Project</strong> baru, misalnya <code>praktikum-uji-atribut</code>.</li>
+<li>Buat <strong>RStudio Project</strong> baru, misalnya <code>usen-uji-atribut</code>.</li>
 <li>Di dalam folder project, buat folder bernama <code>data</code>.</li>
 <li>Unduh semua file data di bawah ini dan simpan di folder <code>data</code>.</li>
 </ol>
@@ -302,7 +302,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="kerjakan-di-file-r-markdown-quarto" class="level3">
 <h3 class="anchored" data-anchor-id="kerjakan-di-file-r-markdown-quarto">3. Kerjakan di file R Markdown / Quarto</h3>
-<p>Buat satu file R Markdown (<code>.Rmd</code>) per kasus. Salin skrip dari situs ini ke dalam <em>chunk</em>, jalankan, lalu tulis interpretasi kalian di bawahnya <strong>dengan kalimat sendiri</strong>.</p>
+<p>Buat satu file R per kasus. Salin skrip dari situs ini ke dalam <em>file,</em> jalankan, lalu tulis interpretasi kalian di bawahnya <strong>dengan kalimat sendiri</strong>. Mudahnya diberikan tanda <code>#</code> untuk mengindikasikan komentar agar tidak dibaca oleh skrip R.</p>
 <div class="cell">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># baris pertama di setiap file kerja kalian</span></span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sensR)</span>
@@ -321,11 +321,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <i class="callout-icon"></i>
 </div>
 <div class="callout-title-container flex-fill">
-<span class="screen-reader-only">Catatan</span>1. Satu sisi atau dua sisi?
+<span class="screen-reader-only">Catatan</span>1. <em>One-sided</em> atau <em>Two-sided</em>?
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Yang menentukan adalah <strong>hipotesis alternatif</strong>, bukan jumlah pilihan jawaban di lembar uji. Jika kita hanya ingin <em>membuktikan</em> bahwa sampel B lebih pahit (karena sengaja ditambah hop), itu <strong>satu sisi</strong>. Jika kita ingin tahu <em>mana</em> yang lebih pahit, itu <strong>dua sisi</strong>.</p>
+<p>Yang menentukan adalah <strong>hipotesis alternatif (Ha)</strong>. Jika kita hanya ingin <em>membuktikan</em> bahwa sampel B lebih pahit (karena sengaja ditambah hop pada pembuatan <em>beer</em>), maka hipotesisnya menjadi one-sided. Jika kita ingin tahu <em>mana</em> yang lebih pahit, hipotesisnya menjadi two-sided.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -338,7 +338,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Hasil uji perbedaan yang tidak signifikan <strong>bukan</strong> bukti bahwa sampel sama. Untuk menyatakan “sama” kita butuh <strong>uji kemiripan</strong> (<em>similarity test</em>) dengan batas perbedaan yang ditetapkan di awal. Ini dibahas di Kasus 1.</p>
+<p>Hasil uji perbedaan yang tidak signifikan <strong>bukan</strong> bukti bahwa sampel sama. Untuk menyatakan “sama” kita butuh <strong>uji kemiripan</strong> (<em>similarity test</em>) dengan batas perbedaan yang ditetapkan di awal. Akan dibahas di Kasus 1.</p>
 </div>
 </div>
 <div class="callout callout-style-default callout-note callout-titled">
@@ -351,8 +351,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <div class="callout-body-container callout-body">
-<p>Ranking hanya memberi urutan, bukan besar perbedaan. Karena itu analisisnya memakai <strong>uji Friedman</strong> (non-parametrik), bukan ANOVA.</p>
+<p>Ranking hanya akan memberi urutan, bukan intensitas perbedaan. Karena itu analisisnya memakai <strong>uji Friedman</strong> (non-parametrik), bukan ANOVA.</p>
 </div>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="images/Uji Sensoris.jpg" class="img-fluid figure-img"></p>
+<figcaption>Summary Attribute Difference Test</figcaption>
+</figure>
 </div>
 
 
@@ -432,7 +438,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     }
       var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
       var mailtoRegex = new RegExp(/^mailto:/);
-        var filterRegex = new RegExp('/' + window.location.host + '/');
+        var filterRegex = new RegExp("https:\/\/andikawicaks\.github\.io\/uji-sensoris-tphp-TPHP262504\/");
       var isInternal = (href) => {
           return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
       }
